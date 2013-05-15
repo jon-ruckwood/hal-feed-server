@@ -4,7 +4,7 @@ import spock.lang.Specification
 
 class IdTest extends Specification {
 
-    def "should return string representation if id"()
+    def "should return string representation of id"()
     {
         expect:
         new Id("1").asString() == "1"
