@@ -30,14 +30,14 @@ class FeedTest extends Specification {
         entries == expectedEntries
     }
 
-    def "should retrieve of specific feed entry"()
+    def "should retrieve by specific feed entry"()
     {
         given:
         final expectedEntry = new FeedEntry(Id.of("1"), null, null)
         feedStore.retrieveBy(expectedEntry.id) >> Optional.of(expectedEntry)
 
         when:
-        final entry = feed.retrieve(expectedEntry.id).get()
+        final entry = feed.retrieveBy(expectedEntry.id).get()
 
         then:
         entry == expectedEntry
@@ -49,13 +49,13 @@ class FeedTest extends Specification {
         feedStore.retrieveBy(Id.of("1")) >> Optional.absent()
 
         when:
-        final entry = feed.retrieve(Id.of("1"))
+        final entry = feed.retrieveBy(Id.of("1"))
 
         then:
         !entry.isPresent()
     }
 
-    def "should create feed entry and publish"()
+    def "should publish feed entry"()
     {
         given:
         final expectedGeneratedId = Id.of("1")

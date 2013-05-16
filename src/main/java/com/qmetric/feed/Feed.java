@@ -28,7 +28,7 @@ public class Feed
         return store.retrieveAll();
     }
 
-    public Optional<FeedEntry> retrieve(final Id id)
+    public Optional<FeedEntry> retrieveBy(final Id id)
     {
         return store.retrieveBy(id);
     }
