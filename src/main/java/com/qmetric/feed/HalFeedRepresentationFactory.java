@@ -9,7 +9,6 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.Map;
 
 public class HalFeedRepresentationFactory implements FeedRepresentationFactory<Representation>
@@ -24,14 +23,14 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private URI feedUri;
 
-    private Optional<Collection<String>> restrictedResourceAttributeNamesForSummary;
+    private Optional<Iterable<String>> restrictedResourceAttributeNamesForSummary;
 
     public HalFeedRepresentationFactory(final URI feedUri)
     {
         this(feedUri, null);
     }
 
-    public HalFeedRepresentationFactory(final URI feedUri, final Collection<String> restrictedResourceAttributesForSummary)
+    public HalFeedRepresentationFactory(final URI feedUri, final Iterable<String> restrictedResourceAttributesForSummary)
     {
         this.feedUri = feedUri;
 
