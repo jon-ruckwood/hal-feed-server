@@ -9,7 +9,10 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Map;
+
+import static org.apache.commons.lang3.text.StrSubstitutor.replace;
 
 public class HalFeedRepresentationFactory implements FeedRepresentationFactory<Representation>
 {
@@ -23,17 +26,19 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private URI feedUri;
 
+    private Links links;
+
     private Optional<Iterable<String>> restrictedResourceAttributeNamesForSummary;
 
-    public HalFeedRepresentationFactory(final URI feedUri)
+    public HalFeedRepresentationFactory(final URI feedUri, final Links links)
     {
-        this(feedUri, null);
+        this(feedUri, links, null);
     }
 
-    public HalFeedRepresentationFactory(final URI feedUri, final Iterable<String> restrictedResourceAttributesForSummary)
+    public HalFeedRepresentationFactory(final URI feedSelf, final Links links, final Iterable<String> restrictedResourceAttributesForSummary)
     {
-        this.feedUri = feedUri;
-
+        this.feedUri = feedSelf;
+        this.links = links;
         this.restrictedResourceAttributeNamesForSummary = Optional.fromNullable(restrictedResourceAttributesForSummary);
     }
 
@@ -44,6 +49,8 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         for (final FeedEntry entry : entries.all())
         {
             final Representation embedded = representationFactory.newRepresentation(uriForEntry(entry));
+
+            addLinksToRepresentation(entry, embedded, links.allForSummary());
 
             embedded.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
@@ -61,6 +68,8 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
     @Override public Representation format(final FeedEntry entry)
     {
         final Representation hal = representationFactory.newRepresentation(uriForEntry(entry));
+
+        addLinksToRepresentation(entry, hal, links.all());
 
         hal.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
@@ -81,6 +90,14 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         catch (URISyntaxException e)
         {
             throw new RuntimeException("Unable to create URI for feed entry", e);
+        }
+    }
+
+    private void addLinksToRepresentation(final FeedEntry feedEntry, final Representation representation, final Collection<Link> links)
+    {
+        for (final Link link : links)
+        {
+            representation.withLink(link.rel, replace(link.href, feedEntry.resource.attributes, "{", "}"));
         }
     }
 }

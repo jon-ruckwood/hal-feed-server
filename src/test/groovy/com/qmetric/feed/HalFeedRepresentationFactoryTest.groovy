@@ -5,6 +5,8 @@ import org.joda.time.DateTime
 import spock.lang.Specification
 
 import static com.google.common.collect.Lists.newArrayList
+import static com.google.common.collect.Sets.newHashSet
+import static com.qmetric.feed.Links.NO_LINKS
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON
 import static java.util.Collections.singleton
 import static java.util.Collections.singletonMap
@@ -22,7 +24,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entries"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedUri)
+        final factory = new HalFeedRepresentationFactory(feedUri, NO_LINKS)
         final entries = new FeedEntries([entry2, entry1])
 
         when:
@@ -32,10 +34,10 @@ class HalFeedRepresentationFactoryTest extends Specification {
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithMultipleEntries.json').text)
     }
 
-    def "should return hal+json representation of entries with restricted resource attributes"()
+    def "should return hal+json representation of entries with restricted resource attributes for summary"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedUri, singleton('stuff'))
+        final factory = new HalFeedRepresentationFactory(feedUri, NO_LINKS, singleton('stuff'))
         final entries = new FeedEntries([entry2, entry1])
 
         when:
@@ -45,10 +47,23 @@ class HalFeedRepresentationFactoryTest extends Specification {
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithMultipleSummarisedEntries.json').text)
     }
 
+    def "should return hal+json representation of entries with custom links"()
+    {
+        given:
+        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new Link("someLink", "http://not-included", false), new Link("someLinkWithNamedParam", "http://other-feed/{stuff}", true))))
+        final entries = new FeedEntries([entry2, entry1])
+
+        when:
+        final hal = factory.format(entries)
+
+        then:
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithMultipleEntriesWithCustomLinks.json').text)
+    }
+
     def "should return hal+json representation of entry"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedUri)
+        final factory = new HalFeedRepresentationFactory(feedUri, NO_LINKS)
         final entry = entry1
 
         when:
@@ -61,7 +76,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entry with complex properties"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedUri)
+        final factory = new HalFeedRepresentationFactory(feedUri, NO_LINKS)
         final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(ImmutableMap.of("nested", singletonMap("stuff", "aaaa"), "arr", newArrayList("a", "b", "c"))))
 
         when:
@@ -69,5 +84,18 @@ class HalFeedRepresentationFactoryTest extends Specification {
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithSingleEntryWithComplexProperties.json').text)
+    }
+
+    def "should return hal+json representation of entry with custom links"()
+    {
+        given:
+        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new Link("someLink", "http://other-feed"), new Link("someLinkWithNamedParam", "http://other-feed/{someId}"))))
+        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(singletonMap("someId", "s1234")))
+
+        when:
+        final hal = factory.format(entry)
+
+        then:
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithSingleEntryWithCustomLinks.json').text)
     }
 }

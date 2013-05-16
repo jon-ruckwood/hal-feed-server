@@ -1,0 +1,15 @@
+{
+    "_links": {
+        "self": {
+            "href": "http://localhost:1234/test-feed/1"
+        },
+        "someLink": {
+            "href": "http://other-feed"
+        },
+        "someLinkWithNamedParam": {
+            "href": "http://other-feed/s1234"
+        }
+    },
+    "someId": "s1234",
+    "published": "13/05/2013 11:02:32"
+}
