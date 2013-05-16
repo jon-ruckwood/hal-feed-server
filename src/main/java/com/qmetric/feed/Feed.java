@@ -39,6 +39,8 @@ public class Feed
     {
         final FeedEntry feedEntry = new FeedEntry(idFactory.create(), publishedDateProvider.getPublishedDate(), resource);
 
-        return store.add(feedEntry);
+        store.add(feedEntry);
+
+        return feedEntry;
     }
 }

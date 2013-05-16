@@ -11,5 +11,5 @@ public interface FeedStore
 
     Optional<FeedEntry> retrieve(Id id);
 
-    FeedEntry add(FeedEntry feedEntry);
+    void add(FeedEntry feedEntry);
 }
