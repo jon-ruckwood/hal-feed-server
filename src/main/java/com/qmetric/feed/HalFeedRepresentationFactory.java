@@ -1,11 +1,15 @@
 package com.qmetric.feed;
 
+import com.google.common.base.Optional;
 import com.theoryinpractise.halbuilder.DefaultRepresentationFactory;
 import com.theoryinpractise.halbuilder.api.Representation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Map;
 
 public class HalFeedRepresentationFactory implements FeedRepresentationFactory<Representation>
@@ -18,28 +22,33 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private final RepresentationFactory representationFactory = new DefaultRepresentationFactory();
 
-    private final FeedUriFactory uriFactory;
+    private URI feedUri;
 
-    private String[] restrictedResourceAttributeNamesForSummary;
+    private Optional<Collection<String>> restrictedResourceAttributeNamesForSummary;
 
-    public HalFeedRepresentationFactory(final FeedUriFactory uriFactory, final String... restrictedResourceAttributesForSummary)
+    public HalFeedRepresentationFactory(final URI feedUri)
     {
-        this.uriFactory = uriFactory;
+        this(feedUri, null);
+    }
 
-        this.restrictedResourceAttributeNamesForSummary = restrictedResourceAttributesForSummary;
+    public HalFeedRepresentationFactory(final URI feedUri, final Collection<String> restrictedResourceAttributesForSummary)
+    {
+        this.feedUri = feedUri;
+
+        this.restrictedResourceAttributeNamesForSummary = Optional.fromNullable(restrictedResourceAttributesForSummary);
     }
 
     @Override public Representation format(final FeedEntries entries)
     {
-        final Representation hal = representationFactory.newRepresentation(uriFactory.createForFeed());
+        final Representation hal = representationFactory.newRepresentation(feedUri);
 
         for (final FeedEntry entry : entries.all())
         {
-            final Representation embedded = representationFactory.newRepresentation(uriFactory.createForFeedEntry(entry.id));
+            final Representation embedded = representationFactory.newRepresentation(uriForEntry(entry));
 
             embedded.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
-            for (final String attributeName : restrictedResourceAttributeNamesForSummary)
+            for (final String attributeName : restrictedResourceAttributeNamesForSummary.or(entry.resource.attributes.keySet()))
             {
                 embedded.withProperty(attributeName, entry.resource.attributes.get(attributeName));
             }
@@ -52,7 +61,7 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     @Override public Representation format(final FeedEntry entry)
     {
-        final Representation hal = representationFactory.newRepresentation(uriFactory.createForFeedEntry(entry.id));
+        final Representation hal = representationFactory.newRepresentation(uriForEntry(entry));
 
         hal.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
@@ -62,5 +71,17 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         }
 
         return hal;
+    }
+
+    private URI uriForEntry(final FeedEntry feedEntry)
+    {
+        try
+        {
+            return new URI(String.format("%s/%s", feedUri, feedEntry.id));
+        }
+        catch (URISyntaxException e)
+        {
+            throw new RuntimeException("Unable to create URI for feed entry", e);
+        }
     }
 }
