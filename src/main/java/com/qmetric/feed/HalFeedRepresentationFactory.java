@@ -4,7 +4,6 @@ import com.theoryinpractise.halbuilder.DefaultRepresentationFactory;
 import com.theoryinpractise.halbuilder.api.Representation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 
-import java.util.Collection;
 import java.util.Map;
 
 public class HalFeedRepresentationFactory implements FeedRepresentationFactory<Representation>
@@ -23,11 +22,11 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         this.propertiesSummaryProvider = propertiesSummaryProvider;
     }
 
-    @Override public Representation format(final Collection<FeedEntry> entries)
+    @Override public Representation format(final FeedEntries entries)
     {
         final Representation hal = representationFactory.newRepresentation(uriFactory.createForFeed());
 
-        for (final FeedEntry entry : entries)
+        for (final FeedEntry entry : entries.all())
         {
             final Representation embedded = representationFactory.newRepresentation(uriFactory.createForFeedEntry(entry.id));
 

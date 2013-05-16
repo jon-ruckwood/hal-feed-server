@@ -7,13 +7,13 @@ class IdTest extends Specification {
     def "should return string representation of id"()
     {
         expect:
-        new Id("1").asString() == "1"
+        Id.of("1").toString() == "1"
     }
 
     def "should evaluate equality"()
     {
         expect:
-        new Id("1") == new Id("1")
-        new Id("1") != new Id("2")
+        Id.of("1") == Id.of("1")
+        Id.of("1") != Id.of("2")
     }
 }

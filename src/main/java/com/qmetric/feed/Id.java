@@ -2,20 +2,19 @@ package com.qmetric.feed;
 
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
 public class Id
 {
     private final String id;
 
-    public Id(final String id)
+    private Id(final String id)
     {
         this.id = id;
     }
 
-    public final String asString()
+    public static Id of(final String id)
     {
-        return id;
+        return new Id(id);
     }
 
     @Override
@@ -33,6 +32,6 @@ public class Id
     @Override
     public String toString()
     {
-        return reflectionToString(this);
+        return id;
     }
 }

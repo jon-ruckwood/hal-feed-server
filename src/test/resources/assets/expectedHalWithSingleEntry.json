@@ -1,10 +1,10 @@
 {
     "_links": {
         "self": {
-            "href": "http://localhost:1234/test-feed/2"
+            "href": "http://localhost:1234/test-feed/1"
         }
     },
-    "stuff": "bbbb",
-    "published": "14/05/2013 11:02:32",
-    "value": "1000"
+    "stuff": "aaaa",
+    "published": "13/05/2013 11:02:32",
+    "value": "2000"
 }

@@ -13,21 +13,22 @@ class HalFeedRepresentationFactoryTest extends Specification {
 
     final uriFactory = Mock(FeedUriFactory)
 
+    final entry1 = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(ImmutableMap.of("stuff", "aaaa", "value", "2000")))
+
+    final entry2 = new FeedEntry(Id.of("2"), new DateTime(2013, 5, 14, 11, 2, 32), new Resource(ImmutableMap.of("stuff", "bbbb", "value", "1000")))
+
     final factory = new HalFeedRepresentationFactory(uriFactory, new FeedEntryPropertiesProviderImpl())
 
     def setup() {
         uriFactory.createForFeed() >> new URI("http://localhost:1234/test-feed")
-        uriFactory.createForFeedEntry(new Id("1")) >> new URI("http://localhost:1234/test-feed/1")
-        uriFactory.createForFeedEntry(new Id("2")) >> new URI("http://localhost:1234/test-feed/2")
+        uriFactory.createForFeedEntry(Id.of("1")) >> new URI("http://localhost:1234/test-feed/1")
+        uriFactory.createForFeedEntry(Id.of("2")) >> new URI("http://localhost:1234/test-feed/2")
     }
 
     def "should return hal+json representation of entries"()
     {
         given:
-        final entries = [//
-                new FeedEntry(new Id("2"), new DateTime(2013, 5, 14, 11, 2, 32), new Resource(ImmutableMap.of("stuff", "bbbb", "value", "1000"))), //
-                new FeedEntry(new Id("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(ImmutableMap.of("stuff", "aaaa", "value", "2000"))) //
-        ]
+        final entries = new FeedEntries([entry2, entry1])
 
         when:
         final hal = factory.format(entries)
@@ -39,7 +40,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entry"()
     {
         given:
-        final entry = new FeedEntry(new Id("2"), new DateTime(2013, 5, 14, 11, 2, 32), new Resource(ImmutableMap.of("stuff", "bbbb", "value", "1000")))
+        final entry = entry1
 
         when:
         final hal = factory.format(entry)

@@ -12,9 +12,9 @@ class FeedEntryTest extends Specification {
     {
         expect:
         final publishedDate = new DateTime()
-        new FeedEntry(new Id("1"), publishedDate, new Resource(singletonMap("stuff", "1234"))) == new FeedEntry(new Id("1"), publishedDate, new Resource(singletonMap("stuff", "1234")))
-        new FeedEntry(new Id("1"), publishedDate, new Resource(singletonMap("stuff", "1234"))) != new FeedEntry(new Id("2"), publishedDate, new Resource(singletonMap("stuff", "1234")))
-        new FeedEntry(new Id("1"), publishedDate, new Resource(emptyMap())) != new FeedEntry(new Id("1"), publishedDate, new Resource(singletonMap("stuff", "1234")))
-        new FeedEntry(new Id("1"), publishedDate, new Resource(singletonMap("stuff", "1234"))) != new FeedEntry(new Id("1"), publishedDate.plusDays(1), new Resource(singletonMap("stuff", "1234")))
+        new FeedEntry(Id.of("1"), publishedDate, new Resource(singletonMap("stuff", "1234"))) == new FeedEntry(Id.of("1"), publishedDate, new Resource(singletonMap("stuff", "1234")))
+        new FeedEntry(Id.of("1"), publishedDate, new Resource(singletonMap("stuff", "1234"))) != new FeedEntry(Id.of("2"), publishedDate, new Resource(singletonMap("stuff", "1234")))
+        new FeedEntry(Id.of("1"), publishedDate, new Resource(emptyMap())) != new FeedEntry(Id.of("1"), publishedDate, new Resource(singletonMap("stuff", "1234")))
+        new FeedEntry(Id.of("1"), publishedDate, new Resource(singletonMap("stuff", "1234"))) != new FeedEntry(Id.of("1"), publishedDate.plusDays(1), new Resource(singletonMap("stuff", "1234")))
     }
 }

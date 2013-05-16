@@ -2,8 +2,6 @@ package com.qmetric.feed;
 
 import com.google.common.base.Optional;
 
-import java.util.Collection;
-
 public class Feed
 {
     private final FeedStore store;
@@ -25,14 +23,14 @@ public class Feed
     }
 
     // todo pagination solution needed
-    public Collection<FeedEntry> retrieveAll()
+    public FeedEntries retrieveAll()
     {
         return store.retrieveAll();
     }
 
     public Optional<FeedEntry> retrieve(final Id id)
     {
-        return store.retrieve(id);
+        return store.retrieveBy(id);
     }
 
     public FeedEntry publish(final Resource resource)

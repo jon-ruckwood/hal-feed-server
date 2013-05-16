@@ -2,14 +2,12 @@ package com.qmetric.feed;
 
 import com.google.common.base.Optional;
 
-import java.util.Collection;
-
 public interface FeedStore
 {
     // todo pagination solution needed
-    Collection<FeedEntry> retrieveAll();
+    FeedEntries retrieveAll();
 
-    Optional<FeedEntry> retrieve(Id id);
+    Optional<FeedEntry> retrieveBy(Id id);
 
     void add(FeedEntry feedEntry);
 }
