@@ -1,25 +1,37 @@
 package com.qmetric.feed;
 
+import com.google.common.base.Optional;
 import com.theoryinpractise.halbuilder.DefaultRepresentationFactory;
 import com.theoryinpractise.halbuilder.api.Representation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.Map;
 
 public class HalFeedRepresentationFactory implements FeedRepresentationFactory<Representation>
 {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+
+    private static final String PUBLISHED_DATE_KEY = "published";
+
     private static final String ENTRIES_KEY = "entries";
 
     private final RepresentationFactory representationFactory = new DefaultRepresentationFactory();
 
     private final FeedUriFactory uriFactory;
 
-    private final FeedEntryPropertiesProvider propertiesSummaryProvider;
+    private final Optional<ResourceAttributesSummaryProvider> resourceAttributesToUseInSummary;
 
-    public HalFeedRepresentationFactory(final FeedUriFactory uriFactory, final FeedEntryPropertiesProvider propertiesSummaryProvider)
+    public HalFeedRepresentationFactory(final FeedUriFactory uriFactory)
+    {
+        this(uriFactory, null);
+    }
+
+    public HalFeedRepresentationFactory(final FeedUriFactory uriFactory, final ResourceAttributesSummaryProvider resourceAttributesToUseForSummary)
     {
         this.uriFactory = uriFactory;
-        this.propertiesSummaryProvider = propertiesSummaryProvider;
+        this.resourceAttributesToUseInSummary = Optional.fromNullable(resourceAttributesToUseForSummary);
     }
 
     @Override public Representation format(final FeedEntries entries)
@@ -30,7 +42,12 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         {
             final Representation embedded = representationFactory.newRepresentation(uriFactory.createForFeedEntry(entry.id));
 
-            for (final Map.Entry<String, String> property : propertiesSummaryProvider.getSummarisedProperties(entry).entrySet())
+            embedded.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
+
+            final Map<String, String> resourceAttributesToUseInSummary =
+                    this.resourceAttributesToUseInSummary.isPresent() ? this.resourceAttributesToUseInSummary.get().filterAttributesForSummary(entry.resource) : entry.resource.attributes;
+
+            for (final Map.Entry<String, String> property : resourceAttributesToUseInSummary.entrySet())
             {
                 embedded.withProperty(property.getKey(), property.getValue());
             }
@@ -45,9 +62,11 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
     {
         final Representation hal = representationFactory.newRepresentation(uriFactory.createForFeedEntry(entry.id));
 
-        for (final Map.Entry<String, String> property : propertiesSummaryProvider.getProperties(entry).entrySet())
+        hal.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
+
+        for (final Map.Entry<String, String> resourceAttribute : entry.resource.attributes.entrySet())
         {
-            hal.withProperty(property.getKey(), property.getValue());
+            hal.withProperty(resourceAttribute.getKey(), resourceAttribute.getValue());
         }
 
         return hal;
