@@ -9,9 +9,9 @@ import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToStrin
 
 public class Resource
 {
-    public final Map<String, String> attributes;
+    public final Map<String, Object> attributes;
 
-    public Resource(final Map<String, String> attributes)
+    public Resource(final Map<String, Object> attributes)
     {
         this.attributes = unmodifiableMap(attributes);
     }

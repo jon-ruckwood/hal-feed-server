@@ -65,7 +65,7 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
         hal.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
-        for (final Map.Entry<String, String> resourceAttribute : entry.resource.attributes.entrySet())
+        for (final Map.Entry<String, Object> resourceAttribute : entry.resource.attributes.entrySet())
         {
             hal.withProperty(resourceAttribute.getKey(), resourceAttribute.getValue());
         }

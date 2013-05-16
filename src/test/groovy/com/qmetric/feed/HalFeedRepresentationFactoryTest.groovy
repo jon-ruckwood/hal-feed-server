@@ -4,8 +4,10 @@ import groovy.json.JsonSlurper
 import org.joda.time.DateTime
 import spock.lang.Specification
 
+import static com.google.common.collect.Lists.newArrayList
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON
 import static java.util.Collections.singleton
+import static java.util.Collections.singletonMap
 
 class HalFeedRepresentationFactoryTest extends Specification {
 
@@ -54,5 +56,18 @@ class HalFeedRepresentationFactoryTest extends Specification {
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithSingleEntry.json').text)
+    }
+
+    def "should return hal+json representation of entry with complex properties"()
+    {
+        given:
+        final factory = new HalFeedRepresentationFactory(feedUri)
+        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(ImmutableMap.of("nested", singletonMap("stuff", "aaaa"), "arr", newArrayList("a", "b", "c"))))
+
+        when:
+        final hal = factory.format(entry)
+
+        then:
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithSingleEntryWithComplexProperties.json').text)
     }
 }
