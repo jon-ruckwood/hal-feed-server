@@ -16,12 +16,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
 
     final entry2 = new FeedEntry(Id.of("2"), new DateTime(2013, 5, 14, 11, 2, 32), new Resource(ImmutableMap.of("stuff", "bbbb", "value", "1000")))
 
-    final factory = new HalFeedRepresentationFactory(uriFactory, new ResourceAttributesSummaryProvider() {
-        @Override Map<String, String> filterAttributesForSummary(final Resource resource)
-        {
-            return ImmutableMap.builder().put("stuff", resource.attributes.get("stuff")).build();
-        }
-    })
+    final factory = new HalFeedRepresentationFactory(uriFactory, 'stuff')
 
     def setup() {
         uriFactory.createForFeed() >> new URI("http://localhost:1234/test-feed")

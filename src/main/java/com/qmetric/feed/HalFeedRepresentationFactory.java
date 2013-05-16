@@ -1,6 +1,5 @@
 package com.qmetric.feed;
 
-import com.google.common.base.Optional;
 import com.theoryinpractise.halbuilder.DefaultRepresentationFactory;
 import com.theoryinpractise.halbuilder.api.Representation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
@@ -21,17 +20,13 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private final FeedUriFactory uriFactory;
 
-    private final Optional<ResourceAttributesSummaryProvider> resourceAttributesToUseInSummary;
+    private String[] restrictedResourceAttributeNamesForSummary;
 
-    public HalFeedRepresentationFactory(final FeedUriFactory uriFactory)
-    {
-        this(uriFactory, null);
-    }
-
-    public HalFeedRepresentationFactory(final FeedUriFactory uriFactory, final ResourceAttributesSummaryProvider resourceAttributesToUseForSummary)
+    public HalFeedRepresentationFactory(final FeedUriFactory uriFactory, final String... restrictedResourceAttributesForSummary)
     {
         this.uriFactory = uriFactory;
-        this.resourceAttributesToUseInSummary = Optional.fromNullable(resourceAttributesToUseForSummary);
+
+        this.restrictedResourceAttributeNamesForSummary = restrictedResourceAttributesForSummary;
     }
 
     @Override public Representation format(final FeedEntries entries)
@@ -44,12 +39,9 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
             embedded.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
-            final Map<String, String> resourceAttributesToUseInSummary =
-                    this.resourceAttributesToUseInSummary.isPresent() ? this.resourceAttributesToUseInSummary.get().filterAttributesForSummary(entry.resource) : entry.resource.attributes;
-
-            for (final Map.Entry<String, String> property : resourceAttributesToUseInSummary.entrySet())
+            for (final String attributeName : restrictedResourceAttributeNamesForSummary)
             {
-                embedded.withProperty(property.getKey(), property.getValue());
+                embedded.withProperty(attributeName, entry.resource.attributes.get(attributeName));
             }
 
             hal.withRepresentation(ENTRIES_KEY, embedded);
