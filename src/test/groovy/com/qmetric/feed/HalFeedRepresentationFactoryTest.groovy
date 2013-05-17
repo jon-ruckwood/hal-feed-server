@@ -33,7 +33,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithMultipleEntries.json').text)
     }
 
-    def "should return hal+json representation of entries with restricted resource attributes for summary"()
+    def "should return hal+json representation of entries with restricted resource attributes for summarised feed entry"()
     {
         given:
         final factory = new HalFeedRepresentationFactory(feedUri, NO_LINKS, singleton('stuff'))
@@ -49,7 +49,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entries with custom links"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new Link("someLink", "http://not-included", false), new Link("someLinkWithNamedParam", "http://other-feed/{stuff}", true))))
+        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new FeedEntryLink("someLink", "http://not-included", false), new FeedEntryLink("someLinkWithNamedParam", "http://other-feed/{stuff}", true))))
         final entries = new FeedEntries([entry2, entry1])
 
         when:
@@ -88,7 +88,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entry with custom links"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new Link("someLink", "http://other-feed"), new Link("someLinkWithNamedParam", "http://other-feed/{someId}"))))
+        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new FeedEntryLink("someLink", "http://other-feed"), new FeedEntryLink("someLinkWithNamedParam", "http://other-feed/{someId}"))))
         final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(singletonMap("someId", "s1234")))
 
         when:
@@ -101,7 +101,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should apply templated attr in returned hal+json representation with custom link with unresolved named parameter"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new Link("someLink", "http://other-feed/{unresolved}"))))
+        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new FeedEntryLink("someLink", "http://other-feed/{unresolved}"))))
         final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(emptyMap()))
 
         when:

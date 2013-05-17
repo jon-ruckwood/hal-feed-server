@@ -10,27 +10,27 @@ import static java.util.Collections.unmodifiableCollection;
 
 public class Links
 {
-    public static final Links NO_LINKS = new Links(Collections.<Link>emptySet());
+    public static final Links NO_LINKS = new Links(Collections.<FeedEntryLink>emptySet());
 
-    private final Collection<Link> links;
+    private final Collection<FeedEntryLink> links;
 
-    public Links(final Collection<Link> links)
+    public Links(final Collection<FeedEntryLink> links)
     {
         this.links = unmodifiableCollection(links);
     }
 
-    public Collection<Link> all()
+    public Collection<FeedEntryLink> forFeedEntry()
     {
         return links;
     }
 
-    public Collection<Link> allForSummary()
+    public Collection<FeedEntryLink> forSummarisedFeedEntry()
     {
-        return filter(links, new Predicate<Link>()
+        return filter(links, new Predicate<FeedEntryLink>()
         {
-            @Override public boolean apply(final Link input)
+            @Override public boolean apply(final FeedEntryLink input)
             {
-                return input.includeInSummary;
+                return input.includeInSummarisedFeedEntry;
             }
         });
     }

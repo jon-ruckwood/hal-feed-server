@@ -26,20 +26,28 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private URI feedUri;
 
-    private Links links;
+    private Links otherLinks;
 
-    private Optional<Iterable<String>> restrictedResourceAttributeNamesForSummary;
+    private Optional<Collection<String>> resourceAttributesForSummarisedFeedEntry;
 
-    public HalFeedRepresentationFactory(final URI feedUri, final Links links)
+    public HalFeedRepresentationFactory(final URI feedUri, final Links otherLinks)
     {
-        this(feedUri, links, null);
+        this(feedUri, otherLinks, null);
     }
 
-    public HalFeedRepresentationFactory(final URI feedSelf, final Links links, final Iterable<String> restrictedResourceAttributesForSummary)
+    public HalFeedRepresentationFactory(final URI feedSelf, final Links otherLinks, final Collection<String> resourceAttributesForSummarisedFeedEntry)
     {
         this.feedUri = feedSelf;
-        this.links = links;
-        this.restrictedResourceAttributeNamesForSummary = Optional.fromNullable(restrictedResourceAttributesForSummary);
+        this.otherLinks = otherLinks;
+
+        if (resourceAttributesForSummarisedFeedEntry != null && !resourceAttributesForSummarisedFeedEntry.isEmpty())
+        {
+            this.resourceAttributesForSummarisedFeedEntry = Optional.of(resourceAttributesForSummarisedFeedEntry);
+        }
+        else
+        {
+            this.resourceAttributesForSummarisedFeedEntry = Optional.absent();
+        }
     }
 
     @Override public Representation format(final FeedEntries entries)
@@ -50,11 +58,11 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         {
             final Representation embedded = representationFactory.newRepresentation(uriForEntry(entry));
 
-            addLinksToRepresentation(entry, embedded, links.allForSummary());
+            addLinksToRepresentation(entry, embedded, otherLinks.forSummarisedFeedEntry());
 
             embedded.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
-            for (final String attributeName : restrictedResourceAttributeNamesForSummary.or(entry.resource.attributes.keySet()))
+            for (final String attributeName : resourceAttributesForSummarisedFeedEntry.or(entry.resource.attributes.keySet()))
             {
                 embedded.withProperty(attributeName, entry.resource.attributes.get(attributeName));
             }
@@ -69,7 +77,7 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
     {
         final Representation hal = representationFactory.newRepresentation(uriForEntry(entry));
 
-        addLinksToRepresentation(entry, hal, links.all());
+        addLinksToRepresentation(entry, hal, otherLinks.forFeedEntry());
 
         hal.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
@@ -93,9 +101,9 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         }
     }
 
-    private void addLinksToRepresentation(final FeedEntry feedEntry, final Representation representation, final Collection<Link> links)
+    private void addLinksToRepresentation(final FeedEntry feedEntry, final Representation representation, final Collection<FeedEntryLink> links)
     {
-        for (final Link link : links)
+        for (final FeedEntryLink link : links)
         {
             representation.withLink(link.rel, replace(link.href, feedEntry.resource.attributes, "{", "}"));
         }

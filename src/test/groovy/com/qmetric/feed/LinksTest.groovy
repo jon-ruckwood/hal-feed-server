@@ -8,14 +8,14 @@ class LinksTest extends Specification {
     def "should expose all links"()
     {
         expect:
-        newArrayList(new Links(newArrayList(new Link("", "", true))).all()) == [new Link("", "", true)]
+        newArrayList(new Links(newArrayList(new FeedEntryLink("", "", true))).forFeedEntry()) == [new FeedEntryLink("", "", true)]
     }
 
     def "should expose summarised links"()
     {
         expect:
-        final linkForSummary = new Link("a", "/a", true)
-        final linkNotForSummary = new Link("b", "/b", false)
-        newArrayList(new Links(newArrayList(linkForSummary, linkNotForSummary)).allForSummary()) == [linkForSummary]
+        final linkToIncludeInSummarisedFeedEntry = new FeedEntryLink("a", "/a", true)
+        final linkToExcludeFromSummarisedFeedEntry = new FeedEntryLink("b", "/b", false)
+        newArrayList(new Links(newArrayList(linkToIncludeInSummarisedFeedEntry, linkToExcludeFromSummarisedFeedEntry)).forSummarisedFeedEntry()) == [linkToIncludeInSummarisedFeedEntry]
     }
 }

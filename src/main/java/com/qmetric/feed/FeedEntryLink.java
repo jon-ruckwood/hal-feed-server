@@ -3,24 +3,24 @@ package com.qmetric.feed;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 
-public class Link
+public class FeedEntryLink
 {
     public final String rel;
 
     public final String href;
 
-    public final boolean includeInSummary;
+    public final boolean includeInSummarisedFeedEntry;
 
-    public Link(final String rel, final String href)
+    public FeedEntryLink(final String rel, final String href)
     {
         this(rel, href, true);
     }
 
-    public Link(final String rel, final String href, final boolean includeInSummary)
+    public FeedEntryLink(final String rel, final String href, final boolean includeInSummarisedFeedEntry)
     {
         this.rel = rel;
         this.href = href;
-        this.includeInSummary = includeInSummary;
+        this.includeInSummarisedFeedEntry = includeInSummarisedFeedEntry;
     }
 
     @Override
