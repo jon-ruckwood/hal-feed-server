@@ -1,24 +1,19 @@
-package com.qmetric.feed;
+package com.qmetric.feed.domain;
 
-import java.util.List;
+import java.util.Map;
 
-import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
-public class FeedEntries
+public class Resource
 {
-    private final List<FeedEntry> entries;
+    public final Map<String, Object> attributes;
 
-    public FeedEntries(final List<FeedEntry> entries)
+    public Resource(final Map<String, Object> attributes)
     {
-        this.entries = unmodifiableList(entries);
-    }
-
-    public List<FeedEntry> all()
-    {
-        return entries;
+        this.attributes = unmodifiableMap(attributes);
     }
 
     @Override

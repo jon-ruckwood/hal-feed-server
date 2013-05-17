@@ -1,0 +1,19 @@
+publicBaseUrl: http://www.domain.com
+
+localPort: 5500
+
+feedName: test-feed
+
+feedEntryLinks:
+    - link:
+        rel: other
+        href: http://other.com/feed
+        includeInSummarisedFeedEntry: true
+
+    - link:
+        rel: other2
+        href: http://other2.com/feed
+        includeInSummarisedFeedEntry: false
+
+resourceAttributesForSummarisedFeedEntry:
+    - stuff

@@ -1,4 +1,5 @@
-package com.qmetric.feed
+package com.qmetric.feed.domain
+
 import spock.lang.Specification
 
 import static com.google.common.collect.Lists.newArrayList

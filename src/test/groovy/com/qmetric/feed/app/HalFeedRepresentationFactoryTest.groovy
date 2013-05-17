@@ -1,12 +1,14 @@
-package com.qmetric.feed
+package com.qmetric.feed.app
+
 import com.google.common.collect.ImmutableMap
+import com.qmetric.feed.domain.*
 import groovy.json.JsonSlurper
 import org.joda.time.DateTime
 import spock.lang.Specification
 
 import static com.google.common.collect.Lists.newArrayList
 import static com.google.common.collect.Sets.newHashSet
-import static com.qmetric.feed.Links.NO_LINKS
+import static com.qmetric.feed.domain.Links.NO_LINKS
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON
 import static java.util.Collections.*
 
@@ -30,7 +32,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
         final hal = factory.format(entries)
 
         then:
-        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithMultipleEntries.json').text)
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithMultipleEntries.json').text)
     }
 
     def "should return hal+json representation of entries with restricted resource attributes for summarised feed entry"()
@@ -43,7 +45,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
         final hal = factory.format(entries)
 
         then:
-        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithMultipleSummarisedEntries.json').text)
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithMultipleSummarisedEntries.json').text)
     }
 
     def "should return hal+json representation of entries with custom links"()
@@ -56,7 +58,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
         final hal = factory.format(entries)
 
         then:
-        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithMultipleEntriesWithCustomLinks.json').text)
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithMultipleEntriesWithCustomLinks.json').text)
     }
 
     def "should return hal+json representation of entry"()
@@ -69,7 +71,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
         final hal = factory.format(entry)
 
         then:
-        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithSingleEntry.json').text)
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithSingleEntry.json').text)
     }
 
     def "should return hal+json representation of entry with complex properties"()
@@ -82,7 +84,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
         final hal = factory.format(entry)
 
         then:
-        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithSingleEntryWithComplexProperties.json').text)
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithSingleEntryWithComplexProperties.json').text)
     }
 
     def "should return hal+json representation of entry with custom links"()
@@ -95,7 +97,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
         final hal = factory.format(entry)
 
         then:
-        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithSingleEntryWithCustomLinks.json').text)
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithSingleEntryWithCustomLinks.json').text)
     }
 
     def "should apply templated attr in returned hal+json representation with custom link with unresolved named parameter"()
@@ -108,6 +110,6 @@ class HalFeedRepresentationFactoryTest extends Specification {
         final hal = factory.format(entry)
 
         then:
-        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithTemplatedCustomLink.json').text)
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithTemplatedCustomLink.json').text)
     }
 }

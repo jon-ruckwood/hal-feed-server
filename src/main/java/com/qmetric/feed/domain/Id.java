@@ -1,19 +1,20 @@
-package com.qmetric.feed;
+package com.qmetric.feed.domain;
 
-import java.util.Map;
-
-import static java.util.Collections.unmodifiableMap;
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
-import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
-public class Resource
+public class Id
 {
-    public final Map<String, Object> attributes;
+    private final String id;
 
-    public Resource(final Map<String, Object> attributes)
+    private Id(final String id)
     {
-        this.attributes = unmodifiableMap(attributes);
+        this.id = id;
+    }
+
+    public static Id of(final String id)
+    {
+        return new Id(id);
     }
 
     @Override
@@ -31,6 +32,6 @@ public class Resource
     @Override
     public String toString()
     {
-        return reflectionToString(this);
+        return id;
     }
 }

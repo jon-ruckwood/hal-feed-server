@@ -1,5 +1,4 @@
-package com.qmetric.feed
-
+package com.qmetric.feed.domain
 import com.google.common.collect.ImmutableMap
 import spock.lang.Specification
 

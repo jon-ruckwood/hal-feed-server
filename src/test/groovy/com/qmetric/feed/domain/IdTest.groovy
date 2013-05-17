@@ -1,4 +1,4 @@
-package com.qmetric.feed
+package com.qmetric.feed.domain
 
 import spock.lang.Specification
 

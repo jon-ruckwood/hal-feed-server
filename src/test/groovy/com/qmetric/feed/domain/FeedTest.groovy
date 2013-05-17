@@ -1,6 +1,14 @@
-package com.qmetric.feed
+package com.qmetric.feed.domain
 
 import com.google.common.base.Optional
+import com.qmetric.feed.domain.Feed
+import com.qmetric.feed.domain.FeedEntries
+import com.qmetric.feed.domain.FeedEntry
+import com.qmetric.feed.domain.FeedStore
+import com.qmetric.feed.domain.Id
+import com.qmetric.feed.domain.IdFactory
+import com.qmetric.feed.domain.PublishedDateProvider
+import com.qmetric.feed.domain.Resource
 import org.joda.time.DateTime
 import spock.lang.Specification
 

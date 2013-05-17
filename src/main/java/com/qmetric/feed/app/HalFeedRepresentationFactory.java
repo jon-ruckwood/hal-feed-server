@@ -1,6 +1,11 @@
-package com.qmetric.feed;
+package com.qmetric.feed.app;
 
 import com.google.common.base.Optional;
+import com.qmetric.feed.domain.FeedEntries;
+import com.qmetric.feed.domain.FeedEntry;
+import com.qmetric.feed.domain.FeedEntryLink;
+import com.qmetric.feed.domain.FeedRepresentationFactory;
+import com.qmetric.feed.domain.Links;
 import com.theoryinpractise.halbuilder.DefaultRepresentationFactory;
 import com.theoryinpractise.halbuilder.api.Representation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;

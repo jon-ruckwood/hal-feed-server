@@ -1,0 +1,5 @@
+publicBaseUrl: http://www.domain.com
+
+localPort: 5500
+
+feedName: test-feed

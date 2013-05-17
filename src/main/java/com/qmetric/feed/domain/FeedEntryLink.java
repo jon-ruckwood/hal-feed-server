@@ -1,4 +1,4 @@
-package com.qmetric.feed;
+package com.qmetric.feed.domain;
 
 import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
