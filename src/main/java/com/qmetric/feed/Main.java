@@ -23,7 +23,7 @@ import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON
 import static java.lang.String.format;
 import static spark.Spark.after;
 import static spark.Spark.get;
-import static spark.Spark.put;
+import static spark.Spark.post;
 import static spark.Spark.setPort;
 
 public class Main
@@ -73,6 +73,6 @@ public class Main
 
         get(new RetrieveFromFeedRoute(format("%s/:id", contextPath), feed, feedResponseFactory));
 
-        put(new PublishToFeedRoute(contextPath, feed, feedResponseFactory, new ObjectMapper()));
+        post(new PublishToFeedRoute(contextPath, feed, feedResponseFactory, new ObjectMapper()));
     }
 }
