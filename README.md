@@ -1,7 +1,7 @@
 HAL+JSON feed server
 =====================
 
-[HAL](http://stateless.co/hal_specification.html) based JSON feed server.
+[HAL+JSON](http://stateless.co/hal_specification.html) based feed server.
 
 A feed contains entries in descending order of publish date.
 
@@ -42,7 +42,7 @@ Example configuration file:
 # This is to cater for load balancers, CNAMEs which may sit in front of your local server.
 publicBaseUrl: http://www.domain.com
 
-# Local http port the server will run on.
+# Local http port the server will listen on.
 localPort: 5500
 
 # Name of feed (this is used as the root context of your feed url).
@@ -131,7 +131,7 @@ To start server:
 
     {
         "customerId": "B18273645",
-        "customerName": "Mr D Bob"
+        "customerName": "Mr C Bob"
     }
 
 ### Response:
@@ -148,13 +148,13 @@ To start server:
         },
         "published": "17/05/2013 16:05:07",
         "customerId": "B18273645",
-        "customerName": "Mr D Bob"
+        "customerName": "Mr C Bob"
     }
 
 
 # TODOs
 
-* Currently the feed is stored in memory (just a quick solution, implementation is inefficient).
+* Currently the feed is persisted in memory (just a quick solution, implementation is inefficient).
   NoSql solution would be ideal, maybe Amazon SimpleDB in combination with Amazon S3.
 
 * Support for PUT, DELETE.
