@@ -28,7 +28,7 @@ import static spark.Spark.setPort;
 
 public class Main
 {
-    private static final String DEFAULT_CONF_FILE = "/usr/local/config/resource-feed/server-config.yml";
+    private static final String DEFAULT_CONF_FILE = "/usr/local/config/hal-feed-server/server-config.yml";
 
     private final Configuration configuration;
 

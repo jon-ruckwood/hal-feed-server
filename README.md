@@ -28,7 +28,7 @@ To build:
 
 To configure the server, create a file in the following location
 
-    /usr/local/config/resource-feed/server-config.yml
+    /usr/local/config/hal-feed-server/server-config.yml
 
 or specify custom location via a system property,
 
@@ -54,7 +54,7 @@ feedName: test-feed
 
 To start server:
 
-    java -jar target/resource-feed.jar
+    java -jar target/hal-feed-server.jar
 
 
 # Usage
