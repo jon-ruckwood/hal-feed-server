@@ -8,8 +8,7 @@ import static com.google.common.collect.Lists.newArrayList
 import static com.google.common.collect.Sets.newHashSet
 import static com.qmetric.feed.Links.NO_LINKS
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON
-import static java.util.Collections.singleton
-import static java.util.Collections.singletonMap
+import static java.util.Collections.*
 
 class HalFeedRepresentationFactoryTest extends Specification {
 
@@ -97,5 +96,18 @@ class HalFeedRepresentationFactoryTest extends Specification {
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithSingleEntryWithCustomLinks.json').text)
+    }
+
+    def "should apply templated attr in returned hal+json representation with custom link with unresolved named parameter"()
+    {
+        given:
+        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new Link("someLink", "http://other-feed/{unresolved}"))))
+        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(emptyMap()))
+
+        when:
+        final hal = factory.format(entry)
+
+        then:
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/assets/expectedHalWithTemplatedCustomLink.json').text)
     }
 }
