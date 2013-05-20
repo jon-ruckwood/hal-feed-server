@@ -4,7 +4,7 @@
             "href": "http://localhost:1234/test-feed/1"
         },
         "someLink": {
-            "href": "http://other-feed/{unresolved}",
+            "href": "http://other/{unresolved}",
             "templated": true
         }
     },

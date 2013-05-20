@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 import static com.google.common.collect.Collections2.transform;
@@ -26,8 +25,6 @@ public class Configuration
 
     private static final String FEED_NAME = "feedName";
 
-    private static final String RESOURCE_ATTRIBUTES_FOR_SUMMARISED_FEED_ENTRY = "resourceAttributesForSummarisedFeedEntry";
-
     private static final String FEED_ENTRY_LINKS = "feedEntryLinks";
 
     private static final String LINK = "link";
@@ -36,19 +33,15 @@ public class Configuration
 
     private static final String LINK_HREF = "href";
 
-    private static final String LINK_INCLUDE_IN_SUMMARISED_FEED_ENTRY = "includeInSummarisedFeedEntry";
-
     public final String publicBaseUrl;
 
     public final int localPort;
 
     public final String feedName;
 
-    public final URI feedSelfUri;
+    public final URI feedSelfLink;
 
     public final Links feedEntryLinks;
-
-    public final Collection<String> resourceAttributesForSummarisedFeedEntry;
 
     public static Configuration load(final InputStream inputStream) throws FileNotFoundException, URISyntaxException
     {
@@ -66,14 +59,9 @@ public class Configuration
 
         feedName = (String) properties.get(FEED_NAME);
 
-        feedSelfUri = new URI(format("%s/%s", publicBaseUrl, feedName));
+        feedSelfLink = new URI(format("%s/%s", publicBaseUrl, feedName));
 
         feedEntryLinks = parseLinks(properties);
-
-        //noinspection unchecked
-        resourceAttributesForSummarisedFeedEntry =
-                properties.containsKey(RESOURCE_ATTRIBUTES_FOR_SUMMARISED_FEED_ENTRY) ? ((Collection<String>) properties.get(RESOURCE_ATTRIBUTES_FOR_SUMMARISED_FEED_ENTRY)) :
-                Collections.<String>emptySet();
     }
 
     private Links parseLinks(final Map<String, Object> properties)
@@ -90,8 +78,7 @@ public class Configuration
                     //noinspection unchecked
                     final Map<String, Object> linkDetails = (Map<String, Object>) input.get(LINK);
 
-                    return new FeedEntryLink((String) linkDetails.get(LINK_REL), (String) linkDetails.get(LINK_HREF),
-                                             (Boolean) linkDetails.get(LINK_INCLUDE_IN_SUMMARISED_FEED_ENTRY));
+                    return new FeedEntryLink((String) linkDetails.get(LINK_REL), (String) linkDetails.get(LINK_HREF));
                 }
             })));
         }

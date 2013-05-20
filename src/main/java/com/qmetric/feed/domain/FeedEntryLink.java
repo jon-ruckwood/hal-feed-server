@@ -9,18 +9,10 @@ public class FeedEntryLink
 
     public final String href;
 
-    public final boolean includeInSummarisedFeedEntry;
-
     public FeedEntryLink(final String rel, final String href)
-    {
-        this(rel, href, true);
-    }
-
-    public FeedEntryLink(final String rel, final String href, final boolean includeInSummarisedFeedEntry)
     {
         this.rel = rel;
         this.href = href;
-        this.includeInSummarisedFeedEntry = includeInSummarisedFeedEntry;
     }
 
     @Override

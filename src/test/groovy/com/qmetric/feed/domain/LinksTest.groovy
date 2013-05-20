@@ -6,17 +6,19 @@ import static com.google.common.collect.Lists.newArrayList
 
 class LinksTest extends Specification {
 
-    def "should expose all links"()
+    final customizedSelfLinkForFeedEntry = new FeedEntryLink("self", "/a")
+
+    final additionalLinkForFeedEntry = new FeedEntryLink("custom", "/b")
+
+    def "should expose additional links for entry"()
     {
         expect:
-        newArrayList(new Links(newArrayList(new FeedEntryLink("", "", true))).forFeedEntry()) == [new FeedEntryLink("", "", true)]
+        newArrayList(new Links(newArrayList(customizedSelfLinkForFeedEntry, additionalLinkForFeedEntry)).additionalLinksForFeedEntry()) == [additionalLinkForFeedEntry]
     }
 
-    def "should expose summarised links"()
+    def "should expose customized self link for entry"()
     {
         expect:
-        final linkToIncludeInSummarisedFeedEntry = new FeedEntryLink("a", "/a", true)
-        final linkToExcludeFromSummarisedFeedEntry = new FeedEntryLink("b", "/b", false)
-        newArrayList(new Links(newArrayList(linkToIncludeInSummarisedFeedEntry, linkToExcludeFromSummarisedFeedEntry)).forSummarisedFeedEntry()) == [linkToIncludeInSummarisedFeedEntry]
+        new Links(newArrayList(additionalLinkForFeedEntry, customizedSelfLinkForFeedEntry)).customizedSelfLinkForFeedEntry().get() == customizedSelfLinkForFeedEntry
     }
 }

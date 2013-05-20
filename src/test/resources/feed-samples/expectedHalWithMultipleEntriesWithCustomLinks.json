@@ -11,11 +11,14 @@
                     "self": {
                         "href": "http://localhost:1234/test-feed/2"
                     },
+                    "someLink": {
+                        "href": "http://other"
+                    },
                     "someLinkWithNamedParam": {
-                        "href": "http://other-feed/bbbb"
+                        "href": "http://other/bbbb"
                     }
                 },
-                "stuff": "bbbb",
+                "someId": "bbbb",
                 "value": "1000",
                 "published": "14/05/2013 11:02:32"
             },
@@ -24,11 +27,14 @@
                     "self": {
                         "href": "http://localhost:1234/test-feed/1"
                     },
+                    "someLink": {
+                        "href": "http://other"
+                    },
                     "someLinkWithNamedParam": {
-                        "href": "http://other-feed/aaaa"
+                        "href": "http://other/aaaa"
                     }
                 },
-                "stuff": "aaaa",
+                "someId": "aaaa",
                 "value": "2000",
                 "published": "13/05/2013 11:02:32"
             }

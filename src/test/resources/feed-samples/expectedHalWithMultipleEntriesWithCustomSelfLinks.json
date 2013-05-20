@@ -9,7 +9,7 @@
             {
                 "_links": {
                     "self": {
-                        "href": "http://localhost:1234/test-feed/2"
+                        "href": "http://other/bbbb"
                     }
                 },
                 "someId": "bbbb",
@@ -19,7 +19,7 @@
             {
                 "_links": {
                     "self": {
-                        "href": "http://localhost:1234/test-feed/1"
+                        "href": "http://other/aaaa"
                     }
                 },
                 "someId": "aaaa",

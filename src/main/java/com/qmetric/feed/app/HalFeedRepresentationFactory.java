@@ -6,6 +6,7 @@ import com.qmetric.feed.domain.FeedEntry;
 import com.qmetric.feed.domain.FeedEntryLink;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
 import com.qmetric.feed.domain.Links;
+import com.qmetric.feed.domain.Resource;
 import com.theoryinpractise.halbuilder.DefaultRepresentationFactory;
 import com.theoryinpractise.halbuilder.api.Representation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
@@ -13,7 +14,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -31,28 +31,12 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private URI feedUri;
 
-    private Links otherLinks;
+    private Links links;
 
-    private Optional<Collection<String>> resourceAttributesForSummarisedFeedEntry;
-
-    public HalFeedRepresentationFactory(final URI feedUri, final Links otherLinks)
-    {
-        this(feedUri, otherLinks, null);
-    }
-
-    public HalFeedRepresentationFactory(final URI feedSelf, final Links otherLinks, final Collection<String> resourceAttributesForSummarisedFeedEntry)
+    public HalFeedRepresentationFactory(final URI feedSelf, final Links links)
     {
         this.feedUri = feedSelf;
-        this.otherLinks = otherLinks;
-
-        if (resourceAttributesForSummarisedFeedEntry != null && !resourceAttributesForSummarisedFeedEntry.isEmpty())
-        {
-            this.resourceAttributesForSummarisedFeedEntry = Optional.of(resourceAttributesForSummarisedFeedEntry);
-        }
-        else
-        {
-            this.resourceAttributesForSummarisedFeedEntry = Optional.absent();
-        }
+        this.links = links;
     }
 
     @Override public Representation format(final FeedEntries entries)
@@ -61,18 +45,7 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
         for (final FeedEntry entry : entries.all())
         {
-            final Representation embedded = representationFactory.newRepresentation(uriForEntry(entry));
-
-            addLinksToRepresentation(entry, embedded, otherLinks.forSummarisedFeedEntry());
-
-            embedded.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
-
-            for (final String attributeName : resourceAttributesForSummarisedFeedEntry.or(entry.resource.attributes.keySet()))
-            {
-                embedded.withProperty(attributeName, entry.resource.attributes.get(attributeName));
-            }
-
-            hal.withRepresentation(ENTRIES_KEY, embedded);
+            hal.withRepresentation(ENTRIES_KEY, format(entry));
         }
 
         return hal;
@@ -80,9 +53,9 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     @Override public Representation format(final FeedEntry entry)
     {
-        final Representation hal = representationFactory.newRepresentation(uriForEntry(entry));
+        final Representation hal = representationFactory.newRepresentation(selfLinkForEntry(entry));
 
-        addLinksToRepresentation(entry, hal, otherLinks.forFeedEntry());
+        includeAdditionalLinks(entry, hal, links.additionalLinksForFeedEntry());
 
         hal.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
@@ -94,23 +67,30 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         return hal;
     }
 
-    private URI uriForEntry(final FeedEntry feedEntry)
+    private String selfLinkForEntry(final FeedEntry feedEntry)
     {
-        try
+        final Optional<FeedEntryLink> customizedSelfLink = links.customizedSelfLinkForFeedEntry();
+
+        if (customizedSelfLink.isPresent())
         {
-            return new URI(String.format("%s/%s", feedUri, feedEntry.id));
+            return replaceNamedParametersInLink(customizedSelfLink.get(), feedEntry.resource);
         }
-        catch (URISyntaxException e)
+        else
         {
-            throw new RuntimeException("Unable to create URI for feed entry", e);
+            return String.format("%s/%s", feedUri, feedEntry.id);
         }
     }
 
-    private void addLinksToRepresentation(final FeedEntry feedEntry, final Representation representation, final Collection<FeedEntryLink> links)
+    private void includeAdditionalLinks(final FeedEntry feedEntry, final Representation representation, final Collection<FeedEntryLink> links)
     {
         for (final FeedEntryLink link : links)
         {
-            representation.withLink(link.rel, replace(link.href, feedEntry.resource.attributes, "{", "}"));
+            representation.withLink(link.rel, replaceNamedParametersInLink(link, feedEntry.resource));
         }
+    }
+
+    private String replaceNamedParametersInLink(final FeedEntryLink link, final Resource resource)
+    {
+        return replace(link.href, resource.attributes, "{", "}");
     }
 }

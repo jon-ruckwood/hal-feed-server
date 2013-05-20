@@ -4,7 +4,7 @@
             "href": "http://localhost:1234/test-feed/1"
         }
     },
-    "stuff": "aaaa",
+    "someId": "aaaa",
     "published": "13/05/2013 11:02:32",
     "value": "2000"
 }

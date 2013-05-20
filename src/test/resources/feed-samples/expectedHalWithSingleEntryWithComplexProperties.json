@@ -6,7 +6,7 @@
     },
     "published": "13/05/2013 11:02:32",
     "nested": {
-        "stuff": "aaaa"
+        "someId": "aaaa"
     },
     "arr": [
         "a",

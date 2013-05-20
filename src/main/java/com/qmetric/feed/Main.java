@@ -47,14 +47,14 @@ public class Main
         final Feed feed = new Feed(new InMemoryStore(), new SequencedIdFactory());
 
         final FeedRepresentationFactory<Representation> feedResponseFactory =
-                new HalFeedRepresentationFactory(configuration.feedSelfUri, configuration.feedEntryLinks, configuration.resourceAttributesForSummarisedFeedEntry);
+                new HalFeedRepresentationFactory(configuration.feedSelfLink, configuration.feedEntryLinks);
 
         configureSpark(feed, feedResponseFactory);
     }
 
     public void configureSpark(final Feed feed, final FeedRepresentationFactory<Representation> feedResponseFactory)
     {
-        final String contextPath = configuration.feedSelfUri.getPath();
+        final String contextPath = configuration.feedSelfLink.getPath();
 
         setPort(configuration.localPort);
 

@@ -8,12 +8,7 @@ feedEntryLinks:
     - link:
         rel: other
         href: http://other.com/feed
-        includeInSummarisedFeedEntry: true
 
     - link:
         rel: other2
         href: http://other2.com/feed
-        includeInSummarisedFeedEntry: false
-
-resourceAttributesForSummarisedFeedEntry:
-    - stuff

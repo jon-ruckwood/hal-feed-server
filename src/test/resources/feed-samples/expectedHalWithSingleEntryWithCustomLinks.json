@@ -4,10 +4,10 @@
             "href": "http://localhost:1234/test-feed/1"
         },
         "someLink": {
-            "href": "http://other-feed"
+            "href": "http://other"
         },
         "someLinkWithNamedParam": {
-            "href": "http://other-feed/s1234"
+            "href": "http://other/s1234"
         }
     },
     "someId": "s1234",

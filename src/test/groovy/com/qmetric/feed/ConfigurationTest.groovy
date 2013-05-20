@@ -15,9 +15,8 @@ class ConfigurationTest extends Specification {
         fullConfig.publicBaseUrl == 'http://www.domain.com'
         fullConfig.localPort == 5500
         fullConfig.feedName == 'test-feed'
-        fullConfig.feedSelfUri == new URI('http://www.domain.com/test-feed')
-        Lists.newArrayList(fullConfig.feedEntryLinks.forFeedEntry()) == [new FeedEntryLink("other", 'http://other.com/feed', true), new FeedEntryLink("other2", 'http://other2.com/feed', false)]
-        fullConfig.resourceAttributesForSummarisedFeedEntry == ['stuff']
+        fullConfig.feedSelfLink == new URI('http://www.domain.com/test-feed')
+        Lists.newArrayList(fullConfig.feedEntryLinks.additionalLinksForFeedEntry()) == [new FeedEntryLink("other", 'http://other.com/feed'), new FeedEntryLink("other2", 'http://other2.com/feed')]
     }
 
     def "should parse minimal configuration"()
@@ -29,8 +28,7 @@ class ConfigurationTest extends Specification {
         minimalConfig.publicBaseUrl == 'http://www.domain.com'
         minimalConfig.localPort == 5500
         minimalConfig.feedName == 'test-feed'
-        minimalConfig.feedSelfUri == new URI('http://www.domain.com/test-feed')
+        minimalConfig.feedSelfLink == new URI('http://www.domain.com/test-feed')
         minimalConfig.feedEntryLinks == Links.NO_LINKS
-        minimalConfig.resourceAttributesForSummarisedFeedEntry.isEmpty()
     }
 }
