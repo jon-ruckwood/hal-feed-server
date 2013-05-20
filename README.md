@@ -47,6 +47,18 @@ localPort: 5500
 
 # Name of feed (this is used as the root context of your feed url).
 feedName: test-feed
+
+# Customized links for feed entries. Links can optionally include named parameters that
+# refer to attributes of the resource.
+# NOTE: Any 'self' relation link configured here will override the default
+# generated 'self' link.
+feedEntryLinks:
+    - link:
+        rel: other
+        href: http://other.com
+    - link:
+        rel: other2
+        href: http://other2.com/{nameOfSomeResourceAttr}
 ```
 
 
