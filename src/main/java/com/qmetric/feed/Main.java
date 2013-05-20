@@ -67,7 +67,7 @@ public class Main
             }
         });
 
-        get(new PingRoute("/"));
+        get(new PingRoute("/ping"));
 
         get(new RetrieveAllFromFeedRoute(contextPath, feed, feedResponseFactory));
 
