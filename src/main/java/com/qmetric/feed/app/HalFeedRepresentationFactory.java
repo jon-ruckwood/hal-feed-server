@@ -59,14 +59,14 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
         includeAdditionalLinks(entry, hal, links.additionalLinksForFeedEntry());
 
+        hal.withProperty(FEED_ENTRY_ID, entry.id.toString());
+
+        hal.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
+
         for (final Map.Entry<String, Object> resourceAttribute : entry.resource.attributes.entrySet())
         {
             hal.withProperty(resourceAttribute.getKey(), resourceAttribute.getValue());
         }
-
-        hal.withProperty(FEED_ENTRY_ID, entry.id.toString());
-
-        hal.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
         return hal;
     }
