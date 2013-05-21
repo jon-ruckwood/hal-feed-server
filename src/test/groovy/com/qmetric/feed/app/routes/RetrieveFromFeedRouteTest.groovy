@@ -28,7 +28,7 @@ class RetrieveFromFeedRouteTest extends Specification {
     def "should return response body representation for existing feed entry"()
     {
         given:
-        request.params("entry_id") >> "1"
+        request.params("id") >> "1"
         final feedEntry = new FeedEntry(Id.of("1"), now(), new Resource(emptyMap()))
         feed.retrieveBy(Id.of("1")) >> Optional.of(feedEntry)
         feedRepresentationFactory.format(feedEntry) >> expectedRepresentation
@@ -45,7 +45,7 @@ class RetrieveFromFeedRouteTest extends Specification {
     def "should return 404 with empty response body when no existing feed entry found"()
     {
         given:
-        request.params("entry_id") >> "1"
+        request.params("id") >> "1"
         feed.retrieveBy(Id.of("1")) >> Optional.absent()
 
         when:

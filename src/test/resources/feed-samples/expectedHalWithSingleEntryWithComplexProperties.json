@@ -4,7 +4,7 @@
             "href": "http://localhost:1234/test-feed/1"
         }
     },
-    "entry_id": "1",
+    "id": "1",
     "published": "13/05/2013 11:02:32",
     "nested": {
         "someId": "aaaa"

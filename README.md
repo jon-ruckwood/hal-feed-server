@@ -95,7 +95,7 @@ To start server:
                             "href": "http://publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"
                         }
                     },
-                    "entry_id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
+                    "id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
                     "published": "17/05/2013 15:58:07",
                     "customerId": "H12345678",
                     "customerName": "Mr B Hal"
@@ -106,7 +106,7 @@ To start server:
                             "href": "http://publicBaseUrl/feedName/9433ff3b-6f9d-4a85-9902-a6cab6cd68ac"
                         }
                     },
-                    "entry_id": "9433ff3b-6f9d-4a85-9902-a6cab6cd68ac",
+                    "id": "9433ff3b-6f9d-4a85-9902-a6cab6cd68ac",
                     "published": "17/05/2013 14:05:07",
                     "customerId": "D87654321",
                     "customerName": "Mr A Dave"
@@ -115,8 +115,8 @@ To start server:
         }
     }
 
-Note that each feed entry will include an "entry_id" and "published" property.
-The "entry_id" is guaranteed to be unique per feed entry.
+Note that each feed entry will include an "id" and "published" property.
+The "id" is guaranteed to be unique per feed entry.
 To avoid conflicts, please avoid usage of these names for resource attributes.
 
 ## To request specific entry from feed:
@@ -135,7 +135,7 @@ To avoid conflicts, please avoid usage of these names for resource attributes.
                 "href": "http://publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"
             }
         },
-        "entry_id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
+        "id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
         "published": "17/05/2013 15:58:07",
         "customerId": "H12345678",
         "customerName": "Mr B Hal"
@@ -164,7 +164,7 @@ To avoid conflicts, please avoid usage of these names for resource attributes.
                 "href": "http://publicBaseUrl/feedName/354d1a92-d59c-4946-8965-4973419b6e80"
             }
         },
-        "entry_id": "354d1a92-d59c-4946-8965-4973419b6e80",
+        "id": "354d1a92-d59c-4946-8965-4973419b6e80",
         "published": "17/05/2013 16:05:07",
         "customerId": "B18273645",
         "customerName": "Mr C Bob"

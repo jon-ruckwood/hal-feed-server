@@ -12,7 +12,7 @@
                         "href": "http://other/bbbb"
                     }
                 },
-                "entry_id": "2",
+                "id": "2",
                 "published": "14/05/2013 11:02:32",
                 "someId": "bbbb",
                 "value": "1000"
@@ -23,7 +23,7 @@
                         "href": "http://other/aaaa"
                     }
                 },
-                "entry_id": "1",
+                "id": "1",
                 "published": "13/05/2013 11:02:32",
                 "someId": "aaaa",
                 "value": "2000"
