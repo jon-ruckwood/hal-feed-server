@@ -3,7 +3,7 @@ package com.qmetric.feed;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qmetric.feed.app.HalFeedRepresentationFactory;
 import com.qmetric.feed.app.InMemoryStore;
-import com.qmetric.feed.app.SequencedIdFactory;
+import com.qmetric.feed.app.UUIDFactory;
 import com.qmetric.feed.app.routes.PingRoute;
 import com.qmetric.feed.app.routes.PublishToFeedRoute;
 import com.qmetric.feed.app.routes.RetrieveAllFromFeedRoute;
@@ -44,10 +44,9 @@ public class Main
 
     public void start() throws URISyntaxException, IOException
     {
-        final Feed feed = new Feed(new InMemoryStore(), new SequencedIdFactory());
+        final Feed feed = new Feed(new InMemoryStore(), new UUIDFactory());
 
-        final FeedRepresentationFactory<Representation> feedResponseFactory =
-                new HalFeedRepresentationFactory(configuration.feedSelfLink, configuration.feedEntryLinks);
+        final FeedRepresentationFactory<Representation> feedResponseFactory = new HalFeedRepresentationFactory(configuration.feedSelfLink, configuration.feedEntryLinks);
 
         configureSpark(feed, feedResponseFactory);
     }

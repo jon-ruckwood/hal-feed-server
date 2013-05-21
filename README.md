@@ -50,7 +50,7 @@ feedName: test-feed
 
 # Customized links for feed entries. Links can optionally include named parameters that
 # refer to attributes of the resource.
-# NOTE: Any 'self' relation link configured here will override the default
+# Note that any 'self' link relation configured will override the default
 # generated 'self' link.
 feedEntryLinks:
     - link:
@@ -92,20 +92,22 @@ To start server:
                 {
                     "_links": {
                         "self": {
-                            "href": "http://publicBaseUrl/feedName/2"
+                            "href": "http://publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"
                         }
                     },
-                    "published": "17/05/2013 15:58:07",
+                    "_id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
+                    "_published": "17/05/2013 15:58:07",
                     "customerId": "H12345678",
                     "customerName": "Mr B Hal"
                 },
                 {
                     "_links": {
                         "self": {
-                            "href": "http://publicBaseUrl/feedName/1"
+                            "href": "http://publicBaseUrl/feedName/9433ff3b-6f9d-4a85-9902-a6cab6cd68ac"
                         }
                     },
-                    "published": "17/05/2013 14:05:07",
+                    "_id": "9433ff3b-6f9d-4a85-9902-a6cab6cd68ac",
+                    "_published": "17/05/2013 14:05:07",
                     "customerId": "D87654321",
                     "customerName": "Mr A Dave"
                 }
@@ -113,10 +115,13 @@ To start server:
         }
     }
 
+Note that each feed entry will include an "_id" and "_published" property.
+The "_id" is guaranteed to be unique per feed entry.
+To avoid conflicts or confusion, please avoid the use of underscores as a prefix for your domain specific property names.
 
 ## To request specific entry from feed:
 
-    GET: http://publicBaseUrl/feedName/2  HTTP 1.1
+    GET: http://publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba  HTTP 1.1
 
 ### Response:
 
@@ -127,10 +132,11 @@ To start server:
     {
         "_links": {
             "self": {
-                "href": "http://publicBaseUrl/feedName/2"
+                "href": "http://publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"
             }
         },
-        "published": "17/05/2013 15:58:07",
+        "_id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
+        "_published": "17/05/2013 15:58:07",
         "customerId": "H12345678",
         "customerName": "Mr B Hal"
     }
@@ -155,10 +161,11 @@ To start server:
     {
         "_links": {
             "self": {
-                "href": "http://publicBaseUrl/feedName/3"
+                "href": "http://publicBaseUrl/feedName/354d1a92-d59c-4946-8965-4973419b6e80"
             }
         },
-        "published": "17/05/2013 16:05:07",
+        "_id": "354d1a92-d59c-4946-8965-4973419b6e80",
+        "_published": "17/05/2013 16:05:07",
         "customerId": "B18273645",
         "customerName": "Mr C Bob"
     }

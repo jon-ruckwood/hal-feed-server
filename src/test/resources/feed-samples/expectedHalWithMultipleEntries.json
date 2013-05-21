@@ -12,9 +12,10 @@
                         "href": "http://localhost:1234/test-feed/2"
                     }
                 },
+                "_id": "2",
+                "_published": "14/05/2013 11:02:32",
                 "someId": "bbbb",
-                "value": "1000",
-                "published": "14/05/2013 11:02:32"
+                "value": "1000"
             },
             {
                 "_links": {
@@ -22,9 +23,10 @@
                         "href": "http://localhost:1234/test-feed/1"
                     }
                 },
+                "_id": "1",
+                "_published": "13/05/2013 11:02:32",
                 "someId": "aaaa",
-                "value": "2000",
-                "published": "13/05/2013 11:02:32"
+                "value": "2000"
             }
         ]
     }
