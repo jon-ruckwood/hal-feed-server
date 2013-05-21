@@ -23,9 +23,9 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
 
-    private static final String FEED_ENTRY_ID = "_id";
+    private static final String FEED_ENTRY_ID = "entry_id";
 
-    private static final String PUBLISHED_DATE_KEY = "_published";
+    private static final String PUBLISHED_DATE_KEY = "published";
 
     private static final String ENTRIES_KEY = "entries";
 
@@ -59,14 +59,14 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
         includeAdditionalLinks(entry, hal, links.additionalLinksForFeedEntry());
 
-        hal.withProperty(FEED_ENTRY_ID, entry.id.toString());
-
-        hal.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
-
         for (final Map.Entry<String, Object> resourceAttribute : entry.resource.attributes.entrySet())
         {
             hal.withProperty(resourceAttribute.getKey(), resourceAttribute.getValue());
         }
+
+        hal.withProperty(FEED_ENTRY_ID, entry.id.toString());
+
+        hal.withProperty(PUBLISHED_DATE_KEY, DATE_FORMATTER.print(entry.publishedDate));
 
         return hal;
     }

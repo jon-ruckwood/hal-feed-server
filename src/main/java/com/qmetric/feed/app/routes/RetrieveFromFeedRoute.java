@@ -30,7 +30,7 @@ public class RetrieveFromFeedRoute extends Route
 
     @Override public Object handle(final Request request, final Response response)
     {
-        final Optional<FeedEntry> feedEntry = feed.retrieveBy(Id.of(request.params("id")));
+        final Optional<FeedEntry> feedEntry = feed.retrieveBy(Id.of(request.params("entry_id")));
         if (feedEntry.isPresent())
         {
             return feedRepresentationFactory.format(feedEntry.get()).toString(HAL_JSON);
