@@ -71,7 +71,7 @@ To start server:
 
 # Usage
 
-## To request current feed:
+## To request the current feed:
 
     GET: http://publicBaseUrl/feedName  HTTP 1.1
 
@@ -111,11 +111,13 @@ To start server:
         }
     }
 
-Note that each feed entry will include an "id" and "published" property.
-The "id" is guaranteed to be unique per feed entry.
-To avoid conflicts, please avoid usage of these names for resource attributes.
+Notes:
 
-## To request specific entry from feed:
+* Resource attributes are hidden when viewing the feed. This content is visible when requesting to view a specific feed entry (via the "self" link).
+* Each feed entry will include an "id" and "published" property. The "id" is guaranteed to be unique per feed entry. To avoid conflicts, please avoid usage of these names for submitted resource attributes.
+
+
+## To request a specific entry from feed:
 
     GET: http://publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba  HTTP 1.1
 
@@ -170,9 +172,9 @@ To avoid conflicts, please avoid usage of these names for resource attributes.
 # TODOs
 
 * Currently the feed is persisted in memory (just a quick solution, implementation is inefficient).
-  NoSql solution would be ideal, maybe Amazon SimpleDB in combination with Amazon S3.
+  NoSql solution would be ideal, maybe Amazon SimpleDB in combination with Amazon S3, MongoDB etc.
 
-* Support for PUT, DELETE.
+* Consider support for PUT, DELETE.
 
 * Pagination with 'next' and 'previous' links included as part of feed.
 
