@@ -96,9 +96,7 @@ To start server:
                         }
                     },
                     "id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
-                    "published": "17/05/2013 15:58:07",
-                    "customerId": "H12345678",
-                    "customerName": "Mr B Hal"
+                    "published": "17/05/2013 15:58:07"
                 },
                 {
                     "_links": {
@@ -107,9 +105,7 @@ To start server:
                         }
                     },
                     "id": "9433ff3b-6f9d-4a85-9902-a6cab6cd68ac",
-                    "published": "17/05/2013 14:05:07",
-                    "customerId": "D87654321",
-                    "customerName": "Mr A Dave"
+                    "published": "17/05/2013 14:05:07"
                 }
             ]
         }
