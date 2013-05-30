@@ -89,18 +89,14 @@ To start server:
             "entries": [
                 {
                     "_links": {
-                        "self": {
-                            "href": "publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"
-                        }
+                        "self": {"href": "publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"}
                     },
                     "id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
                     "published": "17/05/2013 15:58:07"
                 },
                 {
                     "_links": {
-                        "self": {
-                            "href": "publicBaseUrl/feedName/9433ff3b-6f9d-4a85-9902-a6cab6cd68ac"
-                        }
+                        "self": {"href": "publicBaseUrl/feedName/9433ff3b-6f9d-4a85-9902-a6cab6cd68ac"}
                     },
                     "id": "9433ff3b-6f9d-4a85-9902-a6cab6cd68ac",
                     "published": "17/05/2013 14:05:07"
@@ -127,9 +123,7 @@ Notes:
 
     {
         "_links": {
-            "self": {
-                "href": "publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"
-            }
+            "self": {"href": "publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"}
         },
         "id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
         "published": "17/05/2013 15:58:07",
@@ -157,9 +151,7 @@ Notes:
 
     {
         "_links": {
-            "self": {
-                "href": "publicBaseUrl/feedName/354d1a92-d59c-4946-8965-4973419b6e80"
-            }
+            "self": {"href": "publicBaseUrl/feedName/354d1a92-d59c-4946-8965-4973419b6e80"}
         },
         "id": "354d1a92-d59c-4946-8965-4973419b6e80",
         "published": "17/05/2013 16:05:07",
