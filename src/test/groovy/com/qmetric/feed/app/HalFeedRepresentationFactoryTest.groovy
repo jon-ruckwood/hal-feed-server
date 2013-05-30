@@ -49,19 +49,6 @@ class HalFeedRepresentationFactoryTest extends Specification {
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithMultipleEntriesWithCustomLinks.json').text)
     }
 
-    def "should return hal+json representation of entries with overridden self links"()
-    {
-        given:
-        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new FeedEntryLink("self", "http://other/{someId}"))))
-        final entries = new FeedEntries([entry2, entry1])
-
-        when:
-        final hal = factory.format(entries)
-
-        then:
-        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithMultipleEntriesWithCustomSelfLinks.json').text)
-    }
-
     def "should return hal+json representation of entry"()
     {
         given:
@@ -112,18 +99,5 @@ class HalFeedRepresentationFactoryTest extends Specification {
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithTemplatedCustomLink.json').text)
-    }
-
-    def "should apply templated attr in returned hal+json representation with custom self link with unresolved named parameter"()
-    {
-        given:
-        final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new FeedEntryLink("self", "http://other/{unresolved}"))))
-        final entries = new FeedEntries([entry2, entry1])
-
-        when:
-        final hal = factory.format(entries)
-
-        then:
-        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithMultipleEntriesWithTemplatedCustomSelfLinks.json').text)
     }
 }

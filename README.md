@@ -50,8 +50,6 @@ feedName: test-feed
 
 # Customized links for feed entries. Links can optionally include named parameters that
 # refer to attributes of the resource.
-# Note that any 'self' link relation configured will override the default
-# generated 'self' link.
 feedEntryLinks:
     - link:
         rel: other
@@ -73,7 +71,7 @@ To start server:
 
 ## To request the current feed:
 
-    GET: http://publicBaseUrl/feedName  HTTP 1.1
+    GET: publicBaseUrl/feedName  HTTP 1.1
 
 ### Response:
 
@@ -84,7 +82,7 @@ To start server:
     {
         "_links": {
             "self": {
-                "href": "http://publicBaseUrl/feedName"
+                "href": "publicBaseUrl/feedName"
             }
         },
         "_embedded": {
@@ -92,7 +90,7 @@ To start server:
                 {
                     "_links": {
                         "self": {
-                            "href": "http://publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"
+                            "href": "publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"
                         }
                     },
                     "id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
@@ -101,7 +99,7 @@ To start server:
                 {
                     "_links": {
                         "self": {
-                            "href": "http://publicBaseUrl/feedName/9433ff3b-6f9d-4a85-9902-a6cab6cd68ac"
+                            "href": "publicBaseUrl/feedName/9433ff3b-6f9d-4a85-9902-a6cab6cd68ac"
                         }
                     },
                     "id": "9433ff3b-6f9d-4a85-9902-a6cab6cd68ac",
@@ -119,7 +117,7 @@ Notes:
 
 ## To request a specific entry from feed:
 
-    GET: http://publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba  HTTP 1.1
+    GET: publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba  HTTP 1.1
 
 ### Response:
 
@@ -130,7 +128,7 @@ Notes:
     {
         "_links": {
             "self": {
-                "href": "http://publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"
+                "href": "publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"
             }
         },
         "id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
@@ -141,9 +139,9 @@ Notes:
 
 
 
-## To publish new feed entry:
+## To publish a new feed entry:
 
-    POST: http://publicBaseUrl/feedName  HTTP 1.1
+    POST: publicBaseUrl/feedName  HTTP 1.1
 
     {
         "customerId": "B18273645",
@@ -154,12 +152,13 @@ Notes:
 
     201 Created
     Content-Type: application/hal+json
+    Location: publicBaseUrl/feedName/354d1a92-d59c-4946-8965-4973419b6e80
     ...
 
     {
         "_links": {
             "self": {
-                "href": "http://publicBaseUrl/feedName/354d1a92-d59c-4946-8965-4973419b6e80"
+                "href": "publicBaseUrl/feedName/354d1a92-d59c-4946-8965-4973419b6e80"
             }
         },
         "id": "354d1a92-d59c-4946-8965-4973419b6e80",

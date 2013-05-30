@@ -1,7 +1,7 @@
 package com.qmetric.feed.app.routes
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.qmetric.feed.domain.*
+import com.theoryinpractise.halbuilder.api.Link
 import com.theoryinpractise.halbuilder.api.Representation
 import spark.Request
 import spark.Response
@@ -11,6 +11,10 @@ import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON
 import static org.joda.time.DateTime.now
 
 class PublishToFeedRouteTest extends Specification {
+
+    final selfLinkHref = "/self"
+
+    final link = Mock(Link)
 
     final request = Mock(Request)
 
@@ -31,6 +35,8 @@ class PublishToFeedRouteTest extends Specification {
         request.body() >> "{\"stuff\": \"1234\"}"
         feed.publish(expectedFeedEntry.resource) >> expectedFeedEntry
         feedRepresentationFactory.format(expectedFeedEntry) >> expectedRepresentation
+        link.getHref() >> selfLinkHref
+        expectedRepresentation.getResourceLink() >> link
         expectedRepresentation.toString(HAL_JSON) >> "response body"
 
         when:
@@ -39,6 +45,7 @@ class PublishToFeedRouteTest extends Specification {
         then:
         responseBody == "response body"
         1 * response.status(201)
+        1 * response.header("Location", selfLinkHref)
     }
 
     def "should return 400 with exception in response body when request body contains invalid json"()

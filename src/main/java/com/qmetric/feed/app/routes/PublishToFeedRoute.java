@@ -13,6 +13,7 @@ import spark.Route;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.google.common.net.HttpHeaders.LOCATION;
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
@@ -42,9 +43,13 @@ public class PublishToFeedRoute extends Route
 
             final FeedEntry newEntry = feed.publish(new Resource(resourceAttributes));
 
+            final Representation hal = feedRepresentationFactory.format(newEntry);
+
+            response.header(LOCATION, hal.getResourceLink().getHref());
+
             response.status(HTTP_CREATED);
 
-            return feedRepresentationFactory.format(newEntry).toString(HAL_JSON);
+            return hal.toString(HAL_JSON);
         }
         catch (IOException e)
         {
