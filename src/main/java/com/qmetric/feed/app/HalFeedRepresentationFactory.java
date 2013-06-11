@@ -23,9 +23,9 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
 
-    private static final String FEED_ENTRY_ID = "id";
+    private static final String FEED_ENTRY_ID = "_id";
 
-    private static final String PUBLISHED_DATE_KEY = "published";
+    private static final String PUBLISHED_DATE_KEY = "_published";
 
     private static final String ENTRIES_KEY = "entries";
 

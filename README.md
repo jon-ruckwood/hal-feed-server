@@ -91,15 +91,15 @@ To start server:
                     "_links": {
                         "self": {"href": "publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"}
                     },
-                    "id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
-                    "published": "17/05/2013 15:58:07"
+                    "_id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
+                    "_published": "17/05/2013 15:58:07"
                 },
                 {
                     "_links": {
                         "self": {"href": "publicBaseUrl/feedName/9433ff3b-6f9d-4a85-9902-a6cab6cd68ac"}
                     },
-                    "id": "9433ff3b-6f9d-4a85-9902-a6cab6cd68ac",
-                    "published": "17/05/2013 14:05:07"
+                    "_id": "9433ff3b-6f9d-4a85-9902-a6cab6cd68ac",
+                    "_published": "17/05/2013 14:05:07"
                 }
             ]
         }
@@ -107,8 +107,8 @@ To start server:
 
 Notes:
 
-* Resource attributes are hidden when viewing the feed. This content is visible when requesting to view a specific feed entry (via the "self" link).
-* Each feed entry will include an "id" and "published" property. The "id" is guaranteed to be unique per feed entry. To avoid conflicts, please avoid usage of these names for submitted resource attributes.
+* Attributes of a published resource are hidden when viewing the feed. This content is visible when requesting a specific feed entry (via the "self" link).
+* Each feed entry will include additional "_id" and "_published" attributes. The "_id" is guaranteed to be unique per feed entry. To avoid conflicts, please avoid feed submissions containing underscores.
 
 
 ## To request a specific entry from feed:
@@ -125,8 +125,8 @@ Notes:
         "_links": {
             "self": {"href": "publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"}
         },
-        "id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
-        "published": "17/05/2013 15:58:07",
+        "_id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
+        "_published": "17/05/2013 15:58:07",
         "customerId": "H12345678",
         "customerName": "Mr B Hal"
     }
@@ -153,8 +153,8 @@ Notes:
         "_links": {
             "self": {"href": "publicBaseUrl/feedName/354d1a92-d59c-4946-8965-4973419b6e80"}
         },
-        "id": "354d1a92-d59c-4946-8965-4973419b6e80",
-        "published": "17/05/2013 16:05:07",
+        "_id": "354d1a92-d59c-4946-8965-4973419b6e80",
+        "_published": "17/05/2013 16:05:07",
         "customerId": "B18273645",
         "customerName": "Mr C Bob"
     }
