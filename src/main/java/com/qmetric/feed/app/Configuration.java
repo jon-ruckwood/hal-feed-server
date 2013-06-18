@@ -1,4 +1,4 @@
-package com.qmetric.feed;
+package com.qmetric.feed.app;
 
 import com.google.common.base.Function;
 import com.qmetric.feed.domain.FeedEntryLink;
@@ -33,6 +33,8 @@ public class Configuration
 
     private static final String LINK_HREF = "href";
 
+    private static final String DATA_SOURCE = "mysqlDataSource";
+
     public final String publicBaseUrl;
 
     public final int localPort;
@@ -42,6 +44,8 @@ public class Configuration
     public final URI feedSelfLink;
 
     public final Links feedEntryLinks;
+
+    public final DataSourceConfiguration dataSourceConfiguration;
 
     public static Configuration load(final InputStream inputStream) throws FileNotFoundException, URISyntaxException
     {
@@ -62,6 +66,17 @@ public class Configuration
         feedSelfLink = new URI(format("%s/%s", publicBaseUrl, feedName));
 
         feedEntryLinks = parseLinks(properties);
+
+        dataSourceConfiguration = parseDataSource(properties);
+    }
+
+    private DataSourceConfiguration parseDataSource(final Map<String, Object> properties)
+    {
+        //noinspection unchecked
+        final Map<String, Object> dataSourceProperties = (Map<String, Object>) properties.get(DATA_SOURCE);
+
+        return new DataSourceConfiguration("com.mysql.jdbc.Driver", (String) dataSourceProperties.get("url"), (String) dataSourceProperties.get("username"),
+                                    (String) dataSourceProperties.get("password"));
     }
 
     private Links parseLinks(final Map<String, Object> properties)

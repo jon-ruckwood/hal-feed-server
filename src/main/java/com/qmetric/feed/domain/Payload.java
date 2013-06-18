@@ -7,11 +7,11 @@ import static org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 import static org.apache.commons.lang3.builder.HashCodeBuilder.reflectionHashCode;
 import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString;
 
-public class Resource
+public class Payload
 {
     public final Map<String, Object> attributes;
 
-    public Resource(final Map<String, Object> attributes)
+    public Payload(final Map<String, Object> attributes)
     {
         this.attributes = unmodifiableMap(attributes);
     }

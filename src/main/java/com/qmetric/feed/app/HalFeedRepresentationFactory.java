@@ -6,7 +6,7 @@ import com.qmetric.feed.domain.FeedEntry;
 import com.qmetric.feed.domain.FeedEntryLink;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
 import com.qmetric.feed.domain.Links;
-import com.qmetric.feed.domain.Resource;
+import com.qmetric.feed.domain.Payload;
 import com.theoryinpractise.halbuilder.DefaultRepresentationFactory;
 import com.theoryinpractise.halbuilder.api.Representation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
@@ -47,7 +47,7 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
         for (final FeedEntry entry : entries.all())
         {
-            hal.withRepresentation(ENTRIES_KEY, formatExcludingResourceAttributes(entry));
+            hal.withRepresentation(ENTRIES_KEY, formatExcludingPayloadAttributes(entry));
         }
 
         return hal;
@@ -55,17 +55,17 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     @Override public Representation format(final FeedEntry entry)
     {
-        final Representation hal = formatExcludingResourceAttributes(entry);
+        final Representation hal = formatExcludingPayloadAttributes(entry);
 
-        for (final Map.Entry<String, Object> resourceAttribute : entry.resource.attributes.entrySet())
+        for (final Map.Entry<String, Object> payloadAttribute : entry.payload.attributes.entrySet())
         {
-            hal.withProperty(resourceAttribute.getKey(), resourceAttribute.getValue());
+            hal.withProperty(payloadAttribute.getKey(), payloadAttribute.getValue());
         }
 
         return hal;
     }
 
-    private Representation formatExcludingResourceAttributes(final FeedEntry entry)
+    private Representation formatExcludingPayloadAttributes(final FeedEntry entry)
     {
         final Representation hal = representationFactory.newRepresentation(selfLinkForEntry(entry));
 
@@ -84,7 +84,7 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
         if (customizedSelfLink.isPresent())
         {
-            return replaceNamedParametersInLink(customizedSelfLink.get(), feedEntry.resource);
+            return replaceNamedParametersInLink(customizedSelfLink.get(), feedEntry.payload);
         }
         else
         {
@@ -96,12 +96,12 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
     {
         for (final FeedEntryLink link : links)
         {
-            representation.withLink(link.rel, replaceNamedParametersInLink(link, feedEntry.resource));
+            representation.withLink(link.rel, replaceNamedParametersInLink(link, feedEntry.payload));
         }
     }
 
-    private String replaceNamedParametersInLink(final FeedEntryLink link, final Resource resource)
+    private String replaceNamedParametersInLink(final FeedEntryLink link, final Payload payload)
     {
-        return replace(link.href, resource.attributes, "{", "}");
+        return replace(link.href, payload.attributes, "{", "}");
     }
 }

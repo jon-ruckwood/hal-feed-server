@@ -33,11 +33,11 @@ public class Feed
         return store.retrieveBy(id);
     }
 
-    public FeedEntry publish(final Resource resource)
+    public FeedEntry publish(final Payload payload)
     {
-        final FeedEntry feedEntry = new FeedEntry(idFactory.create(), publishedDateProvider.getPublishedDate(), resource);
+        final FeedEntry feedEntry = new FeedEntry(idFactory.create(), publishedDateProvider.getPublishedDate(), payload);
 
-        store.add(feedEntry);
+        store.store(feedEntry);
 
         return feedEntry;
     }

@@ -31,9 +31,9 @@ class PublishToFeedRouteTest extends Specification {
     def "should return 201 with response body representation of added entry"()
     {
         given:
-        final expectedFeedEntry = new FeedEntry(Id.of("1"), now(), new Resource(Collections.<String, Object>singletonMap("stuff", "1234")))
+        final expectedFeedEntry = new FeedEntry(Id.of("1"), now(), new Payload(Collections.<String, Object>singletonMap("stuff", "1234")))
         request.body() >> "{\"stuff\": \"1234\"}"
-        feed.publish(expectedFeedEntry.resource) >> expectedFeedEntry
+        feed.publish(expectedFeedEntry.payload) >> expectedFeedEntry
         feedRepresentationFactory.format(expectedFeedEntry) >> expectedRepresentation
         link.getHref() >> selfLinkHref
         expectedRepresentation.getResourceLink() >> link

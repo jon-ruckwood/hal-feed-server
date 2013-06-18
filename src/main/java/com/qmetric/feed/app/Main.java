@@ -1,19 +1,20 @@
-package com.qmetric.feed;
+package com.qmetric.feed.app;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.qmetric.feed.app.HalFeedRepresentationFactory;
-import com.qmetric.feed.app.InMemoryStore;
-import com.qmetric.feed.app.UUIDFactory;
+import com.googlecode.flyway.core.Flyway;
 import com.qmetric.feed.app.routes.PingRoute;
 import com.qmetric.feed.app.routes.PublishToFeedRoute;
 import com.qmetric.feed.app.routes.RetrieveAllFromFeedRoute;
 import com.qmetric.feed.app.routes.RetrieveFromFeedRoute;
 import com.qmetric.feed.domain.Feed;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
+import com.qmetric.feed.domain.FeedStore;
 import com.theoryinpractise.halbuilder.api.Representation;
 import spark.Filter;
 import spark.Request;
 import spark.Response;
+
+import javax.sql.DataSource;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,14 +45,32 @@ public class Main
 
     public void start() throws URISyntaxException, IOException
     {
-        final Feed feed = new Feed(new InMemoryStore(), new UUIDFactory());
+        final FeedStore store = initFeedStore();
+
+        final Feed feed = new Feed(store, new UUIDFactory());
 
         final FeedRepresentationFactory<Representation> feedResponseFactory = new HalFeedRepresentationFactory(configuration.feedSelfLink, configuration.feedEntryLinks);
 
         configureSpark(feed, feedResponseFactory);
     }
 
-    public void configureSpark(final Feed feed, final FeedRepresentationFactory<Representation> feedResponseFactory)
+    private FeedStore initFeedStore()
+    {
+        final DataSource dataSource = DataSourceFactory.create(configuration.dataSourceConfiguration);
+
+        migratePendingDatabaseSchemaChanges(dataSource);
+
+        return new MysqlFeedStore(dataSource);
+    }
+
+    private void migratePendingDatabaseSchemaChanges(final DataSource dataSource)
+    {
+        final Flyway flyway = new Flyway();
+        flyway.setDataSource(dataSource);
+        flyway.migrate();
+    }
+
+    private void configureSpark(final Feed feed, final FeedRepresentationFactory<Representation> feedResponseFactory)
     {
         final String contextPath = configuration.feedSelfLink.getPath();
 

@@ -19,9 +19,9 @@ class HalFeedRepresentationFactoryTest extends Specification {
 
     final feedUri = new URI('http://localhost:1234/test-feed')
 
-    final entry1 = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(ImmutableMap.of("someId", "aaaa", "value", "2000")))
+    final entry1 = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Payload(ImmutableMap.of("someId", "aaaa", "value", "2000")))
 
-    final entry2 = new FeedEntry(Id.of("2"), new DateTime(2013, 5, 14, 11, 2, 32), new Resource(ImmutableMap.of("someId", "bbbb", "value", "1000")))
+    final entry2 = new FeedEntry(Id.of("2"), new DateTime(2013, 5, 14, 11, 2, 32), new Payload(ImmutableMap.of("someId", "bbbb", "value", "1000")))
 
     def "should return hal+json representation of entries"()
     {
@@ -62,24 +62,24 @@ class HalFeedRepresentationFactoryTest extends Specification {
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithSingleEntry.json').text)
     }
 
-    def "should return hal+json representation of entry with complex properties"()
+    def "should return hal+json representation of entry with complex payload"()
     {
         given:
         final factory = new HalFeedRepresentationFactory(feedUri, NO_LINKS)
-        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(ImmutableMap.of("nested", singletonMap("someId", "aaaa"), "arr", newArrayList("a", "b", "c"))))
+        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Payload(ImmutableMap.of("nested", singletonMap("someId", "aaaa"), "arr", newArrayList("a", "b", "c"))))
 
         when:
         final hal = factory.format(entry)
 
         then:
-        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithSingleEntryWithComplexProperties.json').text)
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithSingleEntryWithComplexPayload.json').text)
     }
 
     def "should return hal+json representation of entry with custom links"()
     {
         given:
         final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new FeedEntryLink("someLink", "http://other"), new FeedEntryLink("someLinkWithNamedParam", "http://other/{someId}"))))
-        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(singletonMap("someId", "s1234")))
+        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Payload(singletonMap("someId", "s1234")))
 
         when:
         final hal = factory.format(entry)
@@ -92,7 +92,7 @@ class HalFeedRepresentationFactoryTest extends Specification {
     {
         given:
         final factory = new HalFeedRepresentationFactory(feedUri, new Links(newHashSet(new FeedEntryLink("someLink", "http://other/{unresolved}"))))
-        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Resource(emptyMap()))
+        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Payload(emptyMap()))
 
         when:
         final hal = factory.format(entry)

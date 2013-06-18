@@ -3,12 +3,9 @@ HAL+JSON feed server
 
 [HAL+JSON](http://stateless.co/hal_specification.html) based feed server.
 
-A feed contains entries in descending order of publish date.
+A feed contains feed entries in descending order of publish date.
 
-Each entry in the feed corresponds to a specific resource.
-
-A resource is specific to your domain, and can be represented by any valid JSON.
-
+A feed entry contains a payload of data specific to your domain, represented by any valid JSON.
 
 Operations currently supported on feed:
 
@@ -49,15 +46,26 @@ localPort: 5500
 feedName: test-feed
 
 # Customized links for feed entries. Links can optionally include named parameters that
-# refer to attributes of the resource.
+# refer to attributes of the payload.
 feedEntryLinks:
     - link:
         rel: other
         href: http://other.com
     - link:
         rel: other2
-        href: http://other2.com/{nameOfSomeResourceAttr}
+        href: http://other2.com/{nameOfSomePayloadAttr}
+
+# Mysql data source for feed persistence
+mysqlDataSource:
+    url: "jdbc:mysql://localhost:3306/feed"
+    username: "user"
+    password: "password"
 ```
+
+
+# Database schema creation/ modification
+
+Patches for the database schema are sync'd automatically during server startup.
 
 
 # Running server
@@ -107,8 +115,8 @@ To start server:
 
 Notes:
 
-* Attributes of a published resource are hidden when viewing the feed. This content is visible when requesting a specific feed entry (via the "self" link).
-* Each feed entry will include additional "_id" and "_published" attributes. The "_id" is guaranteed to be unique per feed entry. To avoid conflicts, please avoid feed submissions containing underscores.
+* Custom payload attributes are hidden when viewing the feed. These attributes are visible only when requesting a specific feed entry (via the "self" link).
+* Each feed entry will include additional "_id" and "_published" attributes. The "_id" is guaranteed to be unique per feed entry. To avoid conflicts, it's advisable not to prefix payload attributes with underscores.
 
 
 ## To request a specific entry from feed:
@@ -133,7 +141,7 @@ Notes:
 
 
 
-## To publish a new feed entry:
+## To publish a new feed entry containing given payload attributes:
 
     POST: publicBaseUrl/feedName  HTTP 1.1
 
@@ -161,11 +169,6 @@ Notes:
 
 
 # TODOs
-
-* Currently the feed is persisted in memory (just a quick solution, implementation is inefficient).
-  NoSql solution would be ideal, maybe Amazon SimpleDB in combination with Amazon S3, MongoDB etc.
-
-* Consider support for PUT, DELETE.
 
 * Pagination with 'next' and 'previous' links included as part of feed.
 

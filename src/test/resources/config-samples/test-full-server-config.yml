@@ -12,3 +12,8 @@ feedEntryLinks:
     - link:
         rel: other2
         href: http://other2.com/feed
+
+mysqlDataSource:
+    url: jdbc:mysql://localhost:3306/feed
+    username: user
+    password: password

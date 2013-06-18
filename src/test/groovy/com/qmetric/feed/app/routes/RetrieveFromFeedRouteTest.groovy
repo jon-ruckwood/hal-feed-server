@@ -29,7 +29,7 @@ class RetrieveFromFeedRouteTest extends Specification {
     {
         given:
         request.params("id") >> "1"
-        final feedEntry = new FeedEntry(Id.of("1"), now(), new Resource(emptyMap()))
+        final feedEntry = new FeedEntry(Id.of("1"), now(), new Payload(emptyMap()))
         feed.retrieveBy(Id.of("1")) >> Optional.of(feedEntry)
         feedRepresentationFactory.format(feedEntry) >> expectedRepresentation
         expectedRepresentation.toString(HAL_JSON) >> "response body"

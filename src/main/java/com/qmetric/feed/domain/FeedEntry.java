@@ -12,13 +12,13 @@ public class FeedEntry
 
     public final DateTime publishedDate;
 
-    public final Resource resource;
+    public final Payload payload;
 
-    public FeedEntry(final Id id, final DateTime publishedDate, final Resource resource)
+    public FeedEntry(final Id id, final DateTime publishedDate, final Payload payload)
     {
         this.id = id;
         this.publishedDate = publishedDate;
-        this.resource = resource;
+        this.payload = payload;
     }
 
     @Override

@@ -3,3 +3,8 @@ publicBaseUrl: http://www.domain.com
 localPort: 5500
 
 feedName: test-feed
+
+mysqlDataSource:
+    url: jdbc:mysql://localhost:3306/feed
+    username: user
+    password: password

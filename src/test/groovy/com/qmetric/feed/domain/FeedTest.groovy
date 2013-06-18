@@ -1,14 +1,6 @@
 package com.qmetric.feed.domain
 
 import com.google.common.base.Optional
-import com.qmetric.feed.domain.Feed
-import com.qmetric.feed.domain.FeedEntries
-import com.qmetric.feed.domain.FeedEntry
-import com.qmetric.feed.domain.FeedStore
-import com.qmetric.feed.domain.Id
-import com.qmetric.feed.domain.IdFactory
-import com.qmetric.feed.domain.PublishedDateProvider
-import com.qmetric.feed.domain.Resource
 import org.joda.time.DateTime
 import spock.lang.Specification
 
@@ -68,14 +60,14 @@ class FeedTest extends Specification {
         given:
         final expectedGeneratedId = Id.of("1")
         final expectedPublishDate = new DateTime(2012, 1, 1, 0, 0, 0, 0)
-        final resource = new Resource(emptyMap())
+        final payload = new Payload(emptyMap())
         idFactory.create() >> expectedGeneratedId
         publishedDateProvider.publishedDate >> expectedPublishDate
 
         when:
-        feed.publish(resource)
+        feed.publish(payload)
 
         then:
-        1 * feedStore.add(new FeedEntry(expectedGeneratedId, expectedPublishDate, resource))
+        1 * feedStore.store(new FeedEntry(expectedGeneratedId, expectedPublishDate, payload))
     }
 }

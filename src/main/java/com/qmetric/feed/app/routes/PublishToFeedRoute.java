@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.qmetric.feed.domain.Feed;
 import com.qmetric.feed.domain.FeedEntry;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
-import com.qmetric.feed.domain.Resource;
+import com.qmetric.feed.domain.Payload;
 import com.theoryinpractise.halbuilder.api.Representation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +43,9 @@ public class PublishToFeedRoute extends Route
         try
         {
             //noinspection unchecked
-            final Map<String, Object> resourceAttributes = jsonObjectMapper.readValue(request.body(), Map.class);
+            final Map<String, Object> payloadAttributes = jsonObjectMapper.readValue(request.body(), Map.class);
 
-            final FeedEntry newEntry = feed.publish(new Resource(resourceAttributes));
+            final FeedEntry newEntry = feed.publish(new Payload(payloadAttributes));
 
             final Representation hal = feedRepresentationFactory.format(newEntry);
 
