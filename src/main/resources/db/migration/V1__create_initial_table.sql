@@ -1,6 +1,6 @@
 CREATE TABLE feed
 (
-  id VARCHAR(128),
+  id INT AUTO_INCREMENT,
   published_date DATETIME NOT NULL,
   payload TEXT,
   PRIMARY KEY (id)

@@ -97,16 +97,16 @@ To start server:
             "entries": [
                 {
                     "_links": {
-                        "self": {"href": "publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"}
+                        "self": {"href": "publicBaseUrl/feedName/2"}
                     },
-                    "_id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
+                    "_id": "2",
                     "_published": "17/05/2013 15:58:07"
                 },
                 {
                     "_links": {
-                        "self": {"href": "publicBaseUrl/feedName/9433ff3b-6f9d-4a85-9902-a6cab6cd68ac"}
+                        "self": {"href": "publicBaseUrl/feedName/1"}
                     },
-                    "_id": "9433ff3b-6f9d-4a85-9902-a6cab6cd68ac",
+                    "_id": "1",
                     "_published": "17/05/2013 14:05:07"
                 }
             ]
@@ -121,7 +121,7 @@ Notes:
 
 ## To request a specific entry from feed:
 
-    GET: publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba  HTTP 1.1
+    GET: publicBaseUrl/feedName/2  HTTP 1.1
 
 ### Response:
 
@@ -131,9 +131,9 @@ Notes:
 
     {
         "_links": {
-            "self": {"href": "publicBaseUrl/feedName/47407be8-f89c-466e-a7c9-cc57cc279bba"}
+            "self": {"href": "publicBaseUrl/feedName/2"}
         },
-        "_id": "47407be8-f89c-466e-a7c9-cc57cc279bba",
+        "_id": "2",
         "_published": "17/05/2013 15:58:07",
         "customerId": "H12345678",
         "customerName": "Mr B Hal"
@@ -154,14 +154,14 @@ Notes:
 
     201 Created
     Content-Type: application/hal+json
-    Location: publicBaseUrl/feedName/354d1a92-d59c-4946-8965-4973419b6e80
+    Location: publicBaseUrl/feedName/3
     ...
 
     {
         "_links": {
-            "self": {"href": "publicBaseUrl/feedName/354d1a92-d59c-4946-8965-4973419b6e80"}
+            "self": {"href": "publicBaseUrl/feedName/3"}
         },
-        "_id": "354d1a92-d59c-4946-8965-4973419b6e80",
+        "_id": "3",
         "_published": "17/05/2013 16:05:07",
         "customerId": "B18273645",
         "customerName": "Mr C Bob"

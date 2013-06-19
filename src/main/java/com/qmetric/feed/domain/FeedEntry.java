@@ -8,11 +8,18 @@ import static org.apache.commons.lang3.builder.ToStringBuilder.reflectionToStrin
 
 public class FeedEntry
 {
+    private static final Id ID_NOT_KNOWN_YET = null;
+
     public final Id id;
 
     public final DateTime publishedDate;
 
     public final Payload payload;
+
+    public FeedEntry(final DateTime publishedDate, final Payload payload)
+    {
+        this(ID_NOT_KNOWN_YET, publishedDate, payload);
+    }
 
     public FeedEntry(final Id id, final DateTime publishedDate, final Payload payload)
     {

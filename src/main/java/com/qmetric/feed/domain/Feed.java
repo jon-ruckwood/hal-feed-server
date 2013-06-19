@@ -6,19 +6,16 @@ public class Feed
 {
     private final FeedStore store;
 
-    private final IdFactory idFactory;
-
     private final PublishedDateProvider publishedDateProvider;
 
-    public Feed(final FeedStore store, final IdFactory idFactory)
+    public Feed(final FeedStore store)
     {
-        this(store, idFactory, new PublishedDateProvider());
+        this(store, new PublishedDateProvider());
     }
 
-    Feed(final FeedStore store, final IdFactory idFactory, final PublishedDateProvider publishedDateProvider)
+    Feed(final FeedStore store, final PublishedDateProvider publishedDateProvider)
     {
         this.store = store;
-        this.idFactory = idFactory;
         this.publishedDateProvider = publishedDateProvider;
     }
 
@@ -35,10 +32,6 @@ public class Feed
 
     public FeedEntry publish(final Payload payload)
     {
-        final FeedEntry feedEntry = new FeedEntry(idFactory.create(), publishedDateProvider.getPublishedDate(), payload);
-
-        store.store(feedEntry);
-
-        return feedEntry;
+        return store.store(new FeedEntry(publishedDateProvider.getPublishedDate(), payload));
     }
 }

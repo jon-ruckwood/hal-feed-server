@@ -11,11 +11,9 @@ class FeedTest extends Specification {
 
     final feedStore = Mock(FeedStore)
 
-    final idFactory = Mock(IdFactory)
-
     final publishedDateProvider = Mock(PublishedDateProvider)
 
-    final feed = new Feed(feedStore, idFactory, publishedDateProvider)
+    final feed = new Feed(feedStore, publishedDateProvider)
 
     def "should retrieve all feed entries"()
     {
@@ -58,16 +56,16 @@ class FeedTest extends Specification {
     def "should publish feed entry"()
     {
         given:
-        final expectedGeneratedId = Id.of("1")
         final expectedPublishDate = new DateTime(2012, 1, 1, 0, 0, 0, 0)
         final payload = new Payload(emptyMap())
-        idFactory.create() >> expectedGeneratedId
         publishedDateProvider.publishedDate >> expectedPublishDate
+        final expectedPersistedFeedEntry = new FeedEntry(Id.of("1"), expectedPublishDate, payload)
+        feedStore.store(new FeedEntry(expectedPublishDate, payload)) >> expectedPersistedFeedEntry
 
         when:
-        feed.publish(payload)
+        final persistedFeedEntry = feed.publish(payload)
 
         then:
-        1 * feedStore.store(new FeedEntry(expectedGeneratedId, expectedPublishDate, payload))
+        persistedFeedEntry == expectedPersistedFeedEntry
     }
 }

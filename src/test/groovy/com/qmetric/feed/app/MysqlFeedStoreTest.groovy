@@ -1,4 +1,5 @@
 package com.qmetric.feed.app
+
 import com.googlecode.flyway.core.Flyway
 import com.mchange.v2.c3p0.ComboPooledDataSource
 import com.qmetric.feed.domain.FeedEntry
@@ -12,6 +13,7 @@ import spock.lang.Specification
 import javax.sql.DataSource
 
 import static java.util.Collections.emptyMap
+import static org.joda.time.DateTime.now
 
 class MysqlFeedStoreTest extends Specification {
 
@@ -39,23 +41,20 @@ class MysqlFeedStoreTest extends Specification {
     def "should retrieve feed entry by id"()
     {
         given:
-        final feedEntry = new FeedEntry(Id.of("1"), DateTime.now(), new Payload(['test': '1234']))
-        store.store(feedEntry)
+        final feedEntry = store.store(new FeedEntry(now(), new Payload(['test': '1234'])))
 
         expect:
         store.retrieveBy(feedEntry.id).get() == feedEntry
-        !store.retrieveBy(Id.of("unknown")).isPresent()
+        !store.retrieveBy(Id.of(String.valueOf(Integer.valueOf(feedEntry.id.toString()) + 1))).isPresent()
+        !store.retrieveBy(Id.of("nonNumbericUnknownId")).isPresent()
     }
 
     def "should retrieve feed entries ordered by descending publish date"()
     {
         given:
-        final notLatestOrEarliestEntry = new FeedEntry(Id.of("notLatestOrEarliest id"), new DateTime(2013, 2, 1, 0, 0, 0, 0), new Payload(emptyMap()))
-        final latestEntry = new FeedEntry(Id.of("latest id"), new DateTime(2013, 3, 1, 0, 0, 0, 0), new Payload(emptyMap()))
-        final earliestEntry = new FeedEntry(Id.of("earliest id"), new DateTime(2013, 1, 1, 0, 0, 0, 0), new Payload(emptyMap()))
-        store.store(notLatestOrEarliestEntry)
-        store.store(latestEntry)
-        store.store(earliestEntry)
+        final notLatestOrEarliestEntry = store.store(new FeedEntry(new DateTime(2013, 2, 1, 0, 0, 0, 0), new Payload(emptyMap())))
+        final latestEntry = store.store(new FeedEntry(new DateTime(2013, 3, 1, 0, 0, 0, 0), new Payload(emptyMap())))
+        final earliestEntry = store.store(new FeedEntry(new DateTime(2013, 1, 1, 0, 0, 0, 0), new Payload(emptyMap())))
 
         when:
         final entries = store.retrieveAll().all()
@@ -64,28 +63,23 @@ class MysqlFeedStoreTest extends Specification {
         entries == [latestEntry, notLatestOrEarliestEntry, earliestEntry]
     }
 
-    def "should retrieve feed entries ordered by id when same publish date"()
+    def "should retrieve feed entries in descending id order when same publish date"()
     {
         given:
-        final entryWithSameDate1 = new FeedEntry(Id.of("b id"), new DateTime(2013, 1, 1, 0, 0, 0, 0), new Payload(emptyMap()))
-        final entryWithSameDate2 = new FeedEntry(Id.of("a id"), new DateTime(2013, 1, 1, 0, 0, 0, 0), new Payload(emptyMap()))
-        store.store(entryWithSameDate1)
-        store.store(entryWithSameDate2)
+        final earliestEntryWithSameDate = store.store(new FeedEntry(new DateTime(2013, 1, 1, 0, 0, 0, 0), new Payload(emptyMap())))
+        final latestEntryWithSameDate = store.store(new FeedEntry(new DateTime(2013, 1, 1, 0, 0, 0, 0), new Payload(emptyMap())))
 
         when:
         final entries = store.retrieveAll().all()
 
         then:
-        entries == [entryWithSameDate2, entryWithSameDate1]
+        entries == [latestEntryWithSameDate, earliestEntryWithSameDate]
     }
 
     def "should store feed entry"()
     {
-        given:
-        final feedEntry = new FeedEntry(Id.of("1"), DateTime.now(), new Payload(['test': '1234', 'inner': ['a': 1]]))
-
         when:
-        store.store(feedEntry)
+        final feedEntry = store.store(new FeedEntry(now(), new Payload(['test': '1234', 'inner': ['a': 1]])))
 
         then:
         store.retrieveBy(feedEntry.id).get() == feedEntry

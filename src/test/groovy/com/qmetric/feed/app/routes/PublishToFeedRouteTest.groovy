@@ -1,4 +1,5 @@
 package com.qmetric.feed.app.routes
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.qmetric.feed.domain.*
 import com.theoryinpractise.halbuilder.api.Link

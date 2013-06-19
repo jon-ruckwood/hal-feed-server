@@ -47,7 +47,7 @@ public class Main
     {
         final FeedStore store = initFeedStore();
 
-        final Feed feed = new Feed(store, new UUIDFactory());
+        final Feed feed = new Feed(store);
 
         final FeedRepresentationFactory<Representation> feedResponseFactory = new HalFeedRepresentationFactory(configuration.feedSelfLink, configuration.feedEntryLinks);
 

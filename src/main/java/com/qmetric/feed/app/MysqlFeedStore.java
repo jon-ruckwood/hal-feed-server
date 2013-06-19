@@ -13,6 +13,7 @@ import org.skife.jdbi.v2.Handle;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.HandleCallback;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
+import org.skife.jdbi.v2.util.LongMapper;
 
 import javax.sql.DataSource;
 
@@ -21,6 +22,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.lang3.math.NumberUtils.isNumber;
 
 public class MysqlFeedStore implements FeedStore
 {
@@ -35,19 +38,20 @@ public class MysqlFeedStore implements FeedStore
         dbi = new DBI(dataSource);
     }
 
-    @Override public void store(final FeedEntry feedEntry)
+    @Override public FeedEntry store(final FeedEntry feedEntry)
     {
-        dbi.withHandle(new HandleCallback<Integer>()
+        final long autoIncrementKey = dbi.withHandle(new HandleCallback<Long>()
         {
-            public Integer withHandle(final Handle handle) throws Exception
+            public Long withHandle(final Handle handle) throws Exception
             {
-                return handle.createStatement("INSERT INTO feed (id, published_date, payload) VALUES (:id, :publishedDate, :payload)") //
-                        .bind("id", feedEntry.id.toString()) //
+                return handle.createStatement("INSERT INTO feed (published_date, payload) VALUES (:publishedDate, :payload)") //
                         .bind("publishedDate", feedEntry.publishedDate.toDate()) //
                         .bind("payload", PAYLOAD_MAPPER.writeValueAsString(feedEntry.payload.attributes)) //
-                        .execute();
+                        .executeAndReturnGeneratedKeys(LongMapper.FIRST).first();
             }
         });
+
+        return new FeedEntry(Id.of(String.valueOf(autoIncrementKey)), feedEntry.publishedDate, feedEntry.payload);
     }
 
     @Override public FeedEntries retrieveAll()
@@ -56,7 +60,7 @@ public class MysqlFeedStore implements FeedStore
         {
             public List<FeedEntry> withHandle(final Handle handle) throws Exception
             {
-                return handle.createQuery("SELECT * FROM feed ORDER BY published_date DESC, id") //
+                return handle.createQuery("SELECT * FROM feed ORDER BY published_date DESC, id DESC") //
                         .map(FEED_SQL_MAPPER) //
                         .list(); //
             }
@@ -65,7 +69,7 @@ public class MysqlFeedStore implements FeedStore
 
     @Override public Optional<FeedEntry> retrieveBy(final Id id)
     {
-        return dbi.withHandle(new HandleCallback<Optional<FeedEntry>>()
+        return isNumber(id.toString()) ? dbi.withHandle(new HandleCallback<Optional<FeedEntry>>()
         {
             public Optional<FeedEntry> withHandle(final Handle handle) throws Exception
             {
@@ -75,7 +79,7 @@ public class MysqlFeedStore implements FeedStore
                                                      .first() //
                 );
             }
-        });
+        }) : Optional.<FeedEntry>absent();
     }
 
     private static Payload deserializePayload(final String payload)

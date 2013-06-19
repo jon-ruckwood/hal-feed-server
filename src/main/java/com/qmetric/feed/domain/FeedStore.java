@@ -9,5 +9,5 @@ public interface FeedStore
 
     Optional<FeedEntry> retrieveBy(Id id);
 
-    void store(FeedEntry feedEntry);
+    FeedEntry store(FeedEntry feedEntry);
 }
