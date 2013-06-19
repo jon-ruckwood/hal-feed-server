@@ -11,6 +11,7 @@ public class DataSourceFactory
     public static DataSource create(final DataSourceConfiguration configuration)
     {
         final ComboPooledDataSource dataSource = new ComboPooledDataSource(true);
+        dataSource.setPreferredTestQuery("select 1 from DUAL");
 
         try
         {
