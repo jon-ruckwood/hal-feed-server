@@ -57,9 +57,9 @@ feedEntryLinks:
 
 # Mysql data source for feed persistence
 mysqlDataSource:
-    url: "jdbc:mysql://localhost:3306/feed"
-    username: "user"
-    password: "password"
+    url: jdbc:mysql://localhost:3306/feed
+    username: user
+    password: password
 ```
 
 
