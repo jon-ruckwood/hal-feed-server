@@ -64,6 +64,21 @@ class MysqlFeedStoreTest extends Specification {
         entries == [latestEntry, notLatestOrEarliestEntry, earliestEntry]
     }
 
+    def "should retrieve feed entries ordered by id when same publish date"()
+    {
+        given:
+        final entryWithSameDate1 = new FeedEntry(Id.of("b id"), new DateTime(2013, 1, 1, 0, 0, 0, 0), new Payload(emptyMap()))
+        final entryWithSameDate2 = new FeedEntry(Id.of("a id"), new DateTime(2013, 1, 1, 0, 0, 0, 0), new Payload(emptyMap()))
+        store.store(entryWithSameDate1)
+        store.store(entryWithSameDate2)
+
+        when:
+        final entries = store.retrieveAll().all()
+
+        then:
+        entries == [entryWithSameDate2, entryWithSameDate1]
+    }
+
     def "should store feed entry"()
     {
         given:

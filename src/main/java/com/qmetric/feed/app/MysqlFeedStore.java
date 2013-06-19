@@ -56,7 +56,7 @@ public class MysqlFeedStore implements FeedStore
         {
             public List<FeedEntry> withHandle(final Handle handle) throws Exception
             {
-                return handle.createQuery("SELECT * FROM feed ORDER BY published_date DESC") //
+                return handle.createQuery("SELECT * FROM feed ORDER BY published_date DESC, id") //
                         .map(FEED_SQL_MAPPER) //
                         .list(); //
             }
