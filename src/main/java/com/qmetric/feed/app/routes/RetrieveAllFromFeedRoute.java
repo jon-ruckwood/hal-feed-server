@@ -11,6 +11,8 @@ import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON
 
 public class RetrieveAllFromFeedRoute extends Route
 {
+    private final String path;
+
     private final Feed feed;
 
     private final FeedRepresentationFactory<Representation> feedRepresentationFactory;
@@ -18,6 +20,7 @@ public class RetrieveAllFromFeedRoute extends Route
     public RetrieveAllFromFeedRoute(final String path, final Feed feed, final FeedRepresentationFactory<Representation> feedRepresentationFactory)
     {
         super(path);
+        this.path = path;
         this.feed = feed;
         this.feedRepresentationFactory = feedRepresentationFactory;
     }
