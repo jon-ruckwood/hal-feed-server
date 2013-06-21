@@ -1,10 +1,10 @@
 package com.qmetric.feed.app;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.googlecode.flyway.core.Flyway;
 import com.qmetric.feed.app.routes.PingRoute;
 import com.qmetric.feed.app.routes.PublishToFeedRoute;
 import com.qmetric.feed.app.routes.RetrieveAllFromFeedRoute;
+import com.qmetric.feed.app.routes.RetrieveEntryFromFeedRoute;
 import com.qmetric.feed.app.routes.RetrieveFromFeedRoute;
 import com.qmetric.feed.domain.Feed;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
@@ -60,7 +60,7 @@ public class Main
 
         migratePendingDatabaseSchemaChanges(dataSource);
 
-        return new MysqlFeedStore(dataSource);
+        return new MysqlFeedStore(dataSource, new PayloadSerializationMapper());
     }
 
     private void migratePendingDatabaseSchemaChanges(final DataSource dataSource)
@@ -87,10 +87,14 @@ public class Main
 
         get(new PingRoute("/ping"));
 
+        // todo: remove once experimental pagination feature fully tested
         get(new RetrieveAllFromFeedRoute(contextPath, feed, feedResponseFactory));
 
-        get(new RetrieveFromFeedRoute(format("%s/:id", contextPath), feed, feedResponseFactory));
+        // todo drop the /experimental path once retrievalAll route removed
+        get(new RetrieveFromFeedRoute(format("%s/experimental", contextPath), feed, feedResponseFactory));
 
-        post(new PublishToFeedRoute(contextPath, feed, feedResponseFactory, new ObjectMapper()));
+        get(new RetrieveEntryFromFeedRoute(format("%s/:id", contextPath), feed, feedResponseFactory));
+
+        post(new PublishToFeedRoute(contextPath, feed, feedResponseFactory, new PayloadSerializationMapper()));
     }
 }

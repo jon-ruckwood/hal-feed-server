@@ -29,6 +29,10 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private static final String ENTRIES_KEY = "entries";
 
+    private static final String PREVIOUS_LINK_RELATION = "previous";
+
+    private static final String NEXT_LINK_RELATION = "next";
+
     private final RepresentationFactory representationFactory = new DefaultRepresentationFactory();
 
     private final URI feedUri;
@@ -44,6 +48,8 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
     @Override public Representation format(final FeedEntries entries)
     {
         final Representation hal = representationFactory.newRepresentation(feedUri);
+
+        includeNavigationalLinks(entries, hal);
 
         for (final FeedEntry entry : entries.all())
         {
@@ -63,6 +69,19 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         }
 
         return hal;
+    }
+
+    private void includeNavigationalLinks(final FeedEntries entries, final Representation hal)
+    {
+        if (entries.laterExists)
+        {
+            hal.withLink(PREVIOUS_LINK_RELATION, String.format("%s/experimental?laterThan=%s", feedUri, entries.first().get().id));
+        }
+
+        if (entries.earlierExists)
+        {
+            hal.withLink(NEXT_LINK_RELATION, String.format("%s/experimental?earlierThan=%s", feedUri, entries.last().get().id));
+        }
     }
 
     private Representation formatExcludingPayloadAttributes(final FeedEntry entry)

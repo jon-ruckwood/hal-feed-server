@@ -9,7 +9,8 @@ A feed entry contains a payload of data specific to your domain, represented by 
 
 Operations currently supported on feed:
 
-* GET to view feed of entries
+* GET to view complete feed of entries
+* GET to view paginated feed of entries (experimental)
 * GET to view specific feed entry
 * POST to publish new feed entry
 
@@ -168,7 +169,13 @@ Notes:
     }
 
 
-# TODOs
 
-* Pagination with 'next' and 'previous' links included as part of feed.
+# Pagination (experimental)
 
+## To request the latest page of entries (defaults to max of 10 entries per page):
+
+    GET: publicBaseUrl/feedName/experimental  HTTP 1.1
+
+* Response includes a "next" link relation for navigating to an earlier page of entries (if no earlier entries, then the "next" link will not be included)
+
+* Response includes a "previous" link relation for navigating to a later page of entries (if no later entries, then the "previous" link will not be included)

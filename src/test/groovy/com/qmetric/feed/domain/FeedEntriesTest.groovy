@@ -9,8 +9,20 @@ class FeedEntriesTest extends Specification {
     def "should hold collection of entries"()
     {
         expect:
-        final entriesList = singletonList(new FeedEntry(Id.of("1"), null, null))
+        final entry = new FeedEntry(Id.of("1"), null, null)
+        final entriesList = singletonList(entry)
         new FeedEntries(entriesList).all() == entriesList
+        new FeedEntries(entriesList).first().get() == entry
+        new FeedEntries(entriesList).last().get() == entry
+    }
+
+    def "should know whether more entries exist on previous/ next pages when at least one entry on current page"()
+    {
+        expect:
+        !new FeedEntries([], true, true).earlierExists
+        !new FeedEntries([], true, true).laterExists
+        new FeedEntries([Mock(FeedEntry)], true, true).earlierExists
+        new FeedEntries([Mock(FeedEntry)], true, true).laterExists
     }
 
     def "should evaluate equality"()

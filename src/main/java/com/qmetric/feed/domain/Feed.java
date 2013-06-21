@@ -19,10 +19,14 @@ public class Feed
         this.publishedDateProvider = publishedDateProvider;
     }
 
-    // todo pagination solution needed
     public FeedEntries retrieveAll()
     {
         return store.retrieveAll();
+    }
+
+    public FeedEntries retrieveBy(final FeedRestrictionCriteria criteria)
+    {
+        return store.retrieveBy(criteria);
     }
 
     public Optional<FeedEntry> retrieveBy(final Id id)

@@ -1,6 +1,6 @@
 package com.qmetric.feed.app.routes
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.qmetric.feed.app.PayloadSerializationMapper
 import com.qmetric.feed.domain.*
 import com.theoryinpractise.halbuilder.api.Link
 import com.theoryinpractise.halbuilder.api.Representation
@@ -27,7 +27,7 @@ class PublishToFeedRouteTest extends Specification {
 
     final feedRepresentationFactory = Mock(FeedRepresentationFactory)
 
-    final route = new PublishToFeedRoute("", feed, feedRepresentationFactory, new ObjectMapper())
+    final route = new PublishToFeedRoute("", feed, feedRepresentationFactory, new PayloadSerializationMapper())
 
     def "should return 201 with response body representation of added entry"()
     {

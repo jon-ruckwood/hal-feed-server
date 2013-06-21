@@ -28,6 +28,20 @@ class FeedTest extends Specification {
         entries == expectedEntries
     }
 
+    def "should retrieve page of feed entries"()
+    {
+        given:
+        final expectedEntries = new FeedEntries(emptyList())
+        final pageCriteria = Mock(FeedRestrictionCriteria)
+        feedStore.retrieveBy(pageCriteria) >> expectedEntries
+
+        when:
+        final entries = feed.retrieveBy(pageCriteria)
+
+        then:
+        entries == expectedEntries
+    }
+
     def "should retrieve by specific feed entry"()
     {
         given:

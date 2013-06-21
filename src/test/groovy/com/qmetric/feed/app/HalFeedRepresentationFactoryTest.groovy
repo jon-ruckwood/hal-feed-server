@@ -100,4 +100,17 @@ class HalFeedRepresentationFactoryTest extends Specification {
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithTemplatedCustomLink.json').text)
     }
+
+    def "should return hal+json representation for page of entries with navigational links"()
+    {
+        given:
+        final factory = new HalFeedRepresentationFactory(feedUri, NO_LINKS)
+        final entries = new FeedEntries([entry2, entry1], true, true)
+
+        when:
+        final hal = factory.format(entries)
+
+        then:
+        jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonSlurper.parseText(this.getClass().getResource('/feed-samples/expectedHalWithEntriesWithNavigationalLinks.json').text)
+    }
 }

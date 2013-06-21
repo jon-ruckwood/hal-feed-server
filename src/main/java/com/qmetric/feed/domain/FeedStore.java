@@ -4,8 +4,9 @@ import com.google.common.base.Optional;
 
 public interface FeedStore
 {
-    // todo pagination solution needed
     FeedEntries retrieveAll();
+
+    FeedEntries retrieveBy(FeedRestrictionCriteria restriction);
 
     Optional<FeedEntry> retrieveBy(Id id);
 
