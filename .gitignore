@@ -9,6 +9,7 @@
 .*
 !.sorting
 !.gitignore
+!.travis.yml
 !.mavenrc
 # Ignore all files with the following extension.
 *.log
