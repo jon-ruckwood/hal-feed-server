@@ -1,6 +1,8 @@
 HAL+JSON feed server
 =====================
 
+[![Build Status](https://travis-ci.org/qmetric/hal-feed-server.png)](https://travis-ci.org/qmetric/hal-feed-server)
+
 [HAL+JSON](http://stateless.co/hal_specification.html) based feed server.
 
 A feed contains feed entries in descending order of publish date.
