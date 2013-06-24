@@ -1,5 +1,6 @@
 package com.qmetric.feed.app;
 
+import com.codahale.metrics.MetricRegistry;
 import com.googlecode.flyway.core.Flyway;
 import com.qmetric.feed.app.routes.PingRoute;
 import com.qmetric.feed.app.routes.PublishToFeedRoute;
@@ -9,6 +10,9 @@ import com.qmetric.feed.app.routes.RetrieveFromFeedRoute;
 import com.qmetric.feed.domain.Feed;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
 import com.qmetric.feed.domain.FeedStore;
+import com.qmetric.spark.metrics.MetricsRoute;
+import com.qmetric.spark.metrics.RouteMeterWrapper;
+import com.qmetric.spark.metrics.RouteTimerWrapper;
 import com.theoryinpractise.halbuilder.api.Representation;
 import spark.Filter;
 import spark.Request;
@@ -32,6 +36,8 @@ public class Main
     private static final String DEFAULT_CONF_FILE = "/usr/local/config/hal-feed-server/server-config.yml";
 
     private final Configuration configuration;
+
+    private final MetricRegistry metricRegistry = new MetricRegistry();
 
     public Main(final Configuration configuration)
     {
@@ -95,6 +101,20 @@ public class Main
 
         get(new RetrieveEntryFromFeedRoute(format("%s/:id", contextPath), feed, feedResponseFactory));
 
-        post(new PublishToFeedRoute(contextPath, feed, feedResponseFactory, new PayloadSerializationMapper()));
+        configurePostPublishToFeedRoute(contextPath, feed, feedResponseFactory);
+
+        get(new MetricsRoute(metricRegistry));
+    }
+
+    private void configurePostPublishToFeedRoute(final String contextPath, final Feed feed, final FeedRepresentationFactory<Representation> feedResponseFactory)
+    {
+
+        final PublishToFeedRoute publishToFeedRoute = new PublishToFeedRoute(contextPath, feed, feedResponseFactory, new PayloadSerializationMapper());
+        decorateRouteForMetrics(publishToFeedRoute, contextPath);
+    }
+
+    private void decorateRouteForMetrics(final PublishToFeedRoute publishToFeedRoute, final String contextPath)
+    {
+        post(new RouteMeterWrapper(contextPath, metricRegistry, new RouteTimerWrapper(contextPath, metricRegistry, publishToFeedRoute)));
     }
 }
