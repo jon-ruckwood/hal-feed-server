@@ -172,7 +172,7 @@ Notes:
 
 
 
-# Pagination (experimental)
+# Pagination (experimental, until fully tested)
 
 ## To request the latest page of entries (defaults to max of 10 entries per page):
 
