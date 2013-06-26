@@ -11,7 +11,6 @@ import javax.sql.DataSource
 
 import static FeedRestrictionCriteria.Filter
 import static com.google.common.base.Optional.absent
-import static com.google.common.collect.Lists.newArrayList
 import static java.util.Collections.emptyMap
 import static org.joda.time.DateTime.now
 
@@ -76,10 +75,10 @@ class MysqlFeedStoreTest extends Specification {
         final all = setupPageOfEntries(10)
 
         expect:
-        store.retrieveBy(criteria(1)) == new FeedEntries(newArrayList(all.subList(0, 1)), true, false)
-        store.retrieveBy(criteria(3)) == new FeedEntries(newArrayList(all.subList(0, 3)), true, false)
-        store.retrieveBy(criteria(10)) == new FeedEntries(newArrayList(all), false, false)
-        store.retrieveBy(criteria(11)) == new FeedEntries(newArrayList(all), false, false)
+        store.retrieveBy(criteria(1)) == new FeedEntries(all.subList(0, 1), true, false)
+        store.retrieveBy(criteria(3)) == new FeedEntries(all.subList(0, 3), true, false)
+        store.retrieveBy(criteria(10)) == new FeedEntries(all, false, false)
+        store.retrieveBy(criteria(11)) == new FeedEntries(all, false, false)
     }
 
     def "should retrieve page of feed entries occurring before a given entry in descending insertion order"()
@@ -88,12 +87,12 @@ class MysqlFeedStoreTest extends Specification {
         final all = setupPageOfEntries(10)
 
         expect:
-        store.retrieveBy(criteria(opt(all.get(5).id), absent(), 3)) == new FeedEntries(newArrayList(all.subList(6, 9)), true, true)
-        store.retrieveBy(criteria(opt(all.get(5).id), absent(), 11)) == new FeedEntries(newArrayList(all.subList(6, 10)), false, true)
-        store.retrieveBy(criteria(opt(all.get(0).id), absent(), 3)) == new FeedEntries(newArrayList(all.subList(1, 4)), true, true)
-        store.retrieveBy(criteria(opt(laterId(all.get(0).id)), absent(), 3)) == new FeedEntries(newArrayList(all.subList(0, 3)), true, false)
-        store.retrieveBy(criteria(opt(all.get(6).id), absent(), 3)) == new FeedEntries(newArrayList(all.subList(7, 10)), false, true)
-        store.retrieveBy(criteria(opt(earlierId(all.get(9).id)), absent(), 3)) == new FeedEntries(newArrayList([]), false, false)
+        store.retrieveBy(criteria(opt(all.get(5).id), absent(), 3)) == new FeedEntries(all.subList(6, 9), true, true)
+        store.retrieveBy(criteria(opt(all.get(5).id), absent(), 11)) == new FeedEntries(all.subList(6, 10), false, true)
+        store.retrieveBy(criteria(opt(all.get(0).id), absent(), 3)) == new FeedEntries(all.subList(1, 4), true, true)
+        store.retrieveBy(criteria(opt(laterId(all.get(0).id)), absent(), 3)) == new FeedEntries(all.subList(0, 3), true, false)
+        store.retrieveBy(criteria(opt(all.get(6).id), absent(), 3)) == new FeedEntries(all.subList(7, 10), false, true)
+        store.retrieveBy(criteria(opt(earlierId(all.get(9).id)), absent(), 3)) == new FeedEntries([], false, false)
     }
 
     def "should retrieve page of feed entries occurring after a given entry in descending insertion order"()
@@ -102,11 +101,11 @@ class MysqlFeedStoreTest extends Specification {
         final all = setupPageOfEntries(10)
 
         expect:
-        store.retrieveBy(criteria(absent(), opt(all.get(5).id), 3)) == new FeedEntries(newArrayList(all.subList(2, 5)), true, true)
-        store.retrieveBy(criteria(absent(), opt(all.get(5).id), 11)) == new FeedEntries(newArrayList(all.subList(0, 5)), true, false)
-        store.retrieveBy(criteria(absent(), opt(all.get(9).id), 3)) == new FeedEntries(newArrayList(all.subList(6, 9)), true, true)
-        store.retrieveBy(criteria(absent(), opt(earlierId(all.get(9).id)), 3)) == new FeedEntries(newArrayList(all.subList(7, 10)), false, true)
-        store.retrieveBy(criteria(absent(), opt(all.get(3).id), 3)) == new FeedEntries(newArrayList(all.subList(0, 3)), true, false)
+        store.retrieveBy(criteria(absent(), opt(all.get(5).id), 3)) == new FeedEntries(all.subList(2, 5), true, true)
+        store.retrieveBy(criteria(absent(), opt(all.get(5).id), 11)) == new FeedEntries(all.subList(0, 5), true, false)
+        store.retrieveBy(criteria(absent(), opt(all.get(9).id), 3)) == new FeedEntries(all.subList(6, 9), true, true)
+        store.retrieveBy(criteria(absent(), opt(earlierId(all.get(9).id)), 3)) == new FeedEntries(all.subList(7, 10), false, true)
+        store.retrieveBy(criteria(absent(), opt(all.get(3).id), 3)) == new FeedEntries(all.subList(0, 3), true, false)
         store.retrieveBy(criteria(absent(), opt(laterId(all.get(0).id)), 3)) == new FeedEntries([], false, false)
     }
 
@@ -138,7 +137,7 @@ class MysqlFeedStoreTest extends Specification {
 
     private List<FeedEntry> setupPageOfEntries(final int numberOfEntries)
     {
-        newArrayList((1..numberOfEntries).collect {store.store(new FeedEntry(now(), new Payload(emptyMap())))}.reverse())
+        (1..numberOfEntries).collect {store.store(new FeedEntry(now(), new Payload(emptyMap())))}.reverse()
     }
 
     private static Optional<Id> opt(final Id id)
