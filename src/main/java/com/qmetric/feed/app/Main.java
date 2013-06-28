@@ -1,7 +1,10 @@
 package com.qmetric.feed.app;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.health.HealthCheckRegistry;
 import com.googlecode.flyway.core.Flyway;
+import com.qmetric.feed.app.configuration.DBHealthCheckBuilder;
+import com.qmetric.feed.app.configuration.HealthCheckConfiguration;
 import com.qmetric.feed.app.routes.PingRoute;
 import com.qmetric.feed.app.routes.PublishToFeedRoute;
 import com.qmetric.feed.app.routes.RetrieveAllFromFeedRoute;
@@ -39,6 +42,8 @@ public class Main
 
     private final MetricRegistry metricRegistry = new MetricRegistry();
 
+    private HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
+
     public Main(final Configuration configuration)
     {
         this.configuration = configuration;
@@ -46,6 +51,7 @@ public class Main
 
     public static void main(String[] args) throws IOException, URISyntaxException
     {
+
         new Main(Configuration.load(new FileInputStream(System.getProperty("conf", DEFAULT_CONF_FILE)))).start();
     }
 
@@ -58,6 +64,8 @@ public class Main
         final FeedRepresentationFactory<Representation> feedResponseFactory = new HalFeedRepresentationFactory(configuration.feedSelfLink, configuration.feedEntryLinks);
 
         configureSpark(feed, feedResponseFactory);
+
+        configureHealthCheck();
     }
 
     private FeedStore initFeedStore()
@@ -104,6 +112,12 @@ public class Main
         configurePostPublishToFeedRoute(contextPath, feed, feedResponseFactory);
 
         get(new MetricsRoute(metricRegistry));
+    }
+
+    private void configureHealthCheck()
+    {
+
+        new HealthCheckConfiguration(healthCheckRegistry, new DBHealthCheckBuilder(configuration)).configure();
     }
 
     private void configurePostPublishToFeedRoute(final String contextPath, final Feed feed, final FeedRepresentationFactory<Representation> feedResponseFactory)
