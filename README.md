@@ -186,3 +186,10 @@ Notes:
 * Response includes a "next" link relation for navigating to an earlier page of entries (if no earlier entries, then the "next" link will not be included)
 
 * Response includes a "previous" link relation for navigating to a later page of entries (if no later entries, then the "previous" link will not be included)
+
+
+# Consuming feed
+
+Libraries written to consume from feeds:
+
+* Java - https://github.com/qmetric/hal-feed-consumer
