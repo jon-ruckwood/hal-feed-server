@@ -17,7 +17,12 @@ Operations currently supported on feed:
 * POST to publish new feed entry
 
 
-# Building server
+# Downloading pre-built server JAR
+
+The server JAR can be downloaded from https://oss.sonatype.org/content/groups/public/com/qmetric/hal-feed-server/
+
+
+# Building server JAR from source
 
 To build:
 

@@ -11,7 +11,6 @@ public class DataSourceFactory
     public static DataSource create(final DataSourceConfiguration configuration)
     {
         final ComboPooledDataSource dataSource = new ComboPooledDataSource(true);
-        dataSource.setPreferredTestQuery("select 1 from DUAL");
 
         try
         {
@@ -25,6 +24,8 @@ public class DataSourceFactory
         dataSource.setJdbcUrl(configuration.url);
         dataSource.setUser(configuration.username);
         dataSource.setPassword(configuration.password);
+        dataSource.setPreferredTestQuery("select 1 from dual");
+        dataSource.setIdleConnectionTestPeriod(60);
 
         return dataSource;
     }

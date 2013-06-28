@@ -1,7 +1,6 @@
-package com.qmetric.feed
+package com.qmetric.feed.app
+
 import com.google.common.collect.Lists
-import com.qmetric.feed.app.Configuration
-import com.qmetric.feed.app.DataSourceConfiguration
 import com.qmetric.feed.domain.FeedEntryLink
 import com.qmetric.feed.domain.Links
 import spock.lang.Specification
