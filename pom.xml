@@ -82,7 +82,7 @@
         <dependency>
             <groupId>com.qmetric</groupId>
             <artifactId>spark-metrics</artifactId>
-            <version>1.8</version>
+            <version>1.7</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.sparkjava</groupId>
