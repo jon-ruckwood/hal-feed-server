@@ -13,6 +13,7 @@ import com.qmetric.feed.app.routes.RetrieveFromFeedRoute;
 import com.qmetric.feed.domain.Feed;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
 import com.qmetric.feed.domain.FeedStore;
+import com.qmetric.spark.metrics.HealthCheckRoute;
 import com.qmetric.spark.metrics.MetricsRoute;
 import com.qmetric.spark.metrics.RouteMeterWrapper;
 import com.qmetric.spark.metrics.RouteTimerWrapper;
@@ -26,6 +27,7 @@ import javax.sql.DataSource;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON;
 import static java.lang.String.format;
@@ -40,22 +42,28 @@ public class Main
 
     private final Configuration configuration;
 
+    private final DataSource dataSource;
+
     private final MetricRegistry metricRegistry = new MetricRegistry();
 
     private HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
 
-    public Main(final Configuration configuration)
+    public Main(final Configuration configuration, final DataSource dataSource)
     {
         this.configuration = configuration;
+        this.dataSource = dataSource;
     }
 
-    public static void main(String[] args) throws IOException, URISyntaxException
+    public static void main(String[] args) throws IOException, URISyntaxException, SQLException
     {
+        final Configuration configuration = Configuration.load(new FileInputStream(System.getProperty("conf", DEFAULT_CONF_FILE)));
 
-        new Main(Configuration.load(new FileInputStream(System.getProperty("conf", DEFAULT_CONF_FILE)))).start();
+        final DataSource dataSource = DataSourceFactory.create(configuration.dataSourceConfiguration);
+
+        new Main(configuration, dataSource).start();
     }
 
-    public void start() throws URISyntaxException, IOException
+    public void start() throws URISyntaxException, IOException, SQLException
     {
         final FeedStore store = initFeedStore();
 
@@ -70,8 +78,6 @@ public class Main
 
     private FeedStore initFeedStore()
     {
-        final DataSource dataSource = DataSourceFactory.create(configuration.dataSourceConfiguration);
-
         migratePendingDatabaseSchemaChanges(dataSource);
 
         return new MysqlFeedStore(dataSource, new PayloadSerializationMapper());
@@ -112,9 +118,11 @@ public class Main
         configurePostPublishToFeedRoute(contextPath, feed, feedResponseFactory);
 
         get(new MetricsRoute(metricRegistry));
+
+        get(new HealthCheckRoute(healthCheckRegistry));
     }
 
-    private void configureHealthCheck()
+    private void configureHealthCheck() throws SQLException
     {
 
         new HealthCheckConfiguration(healthCheckRegistry, new DBHealthCheckBuilder(configuration)).configure();

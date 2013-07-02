@@ -16,7 +16,7 @@ public class DBHealthCheckBuilder
         this.configuration = configuration;
     }
 
-    public DBHealthCheck build()
+    public DBHealthCheck build() throws SQLException
     {
         return new DBHealthCheck(DataSourceFactory.create(configuration.dataSourceConfiguration));
     }

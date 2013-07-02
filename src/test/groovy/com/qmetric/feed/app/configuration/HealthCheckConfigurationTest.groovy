@@ -17,14 +17,11 @@ class HealthCheckConfigurationTest extends Specification
 
     def "DBHealthCheck is registered with healthCheckRegistry"()
     {
-
-
         given:
         dbHealthCheckBuilder.build() >> dbHealthCheck
 
         when:
         healthCheckConfiguration.configure();
-
 
         then:
         1 * healthCheckRegistry.register("Database", dbHealthCheck)

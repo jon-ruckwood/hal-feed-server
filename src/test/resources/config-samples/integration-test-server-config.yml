@@ -1,0 +1,19 @@
+publicBaseUrl: http://localhost:55555
+
+localPort: 55555
+
+feedName: test-feed
+
+feedEntryLinks:
+    - link:
+        rel: other
+        href: http://other.com/feed
+
+    - link:
+        rel: other2
+        href: http://other2.com/feed
+
+mysqlDataSource:
+    url: jdbc:hsqldb:mem:feed
+    username: sa
+    password:
