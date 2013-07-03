@@ -1,7 +1,7 @@
 {
     "_links": {
         "self": {
-            "href": "http://localhost:1234/test-feed/1"
+            "href": "http://localhost:1234/feed/1"
         }
     },
     "_id": "1",

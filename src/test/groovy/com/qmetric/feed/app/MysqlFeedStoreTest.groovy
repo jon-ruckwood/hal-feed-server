@@ -1,9 +1,13 @@
 package com.qmetric.feed.app
+
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.base.Optional
 import com.googlecode.flyway.core.Flyway
-import com.mchange.v2.c3p0.ComboPooledDataSource
+import com.googlecode.flyway.core.util.jdbc.DriverDataSource
+import com.qmetric.feed.app.support.FeedStorePayloadRepresentation
 import com.qmetric.feed.domain.*
 import groovy.sql.Sql
+import org.skife.jdbi.v2.DBI
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -29,7 +33,7 @@ class MysqlFeedStoreTest extends Specification {
 
         initSchema(dataSource)
 
-        store = new MysqlFeedStore(dataSource, new PayloadSerializationMapper())
+        store = new MysqlFeedStore(new DBI(dataSource), new FeedStorePayloadRepresentation(new ObjectMapper()))
     }
 
     def cleanup()
@@ -120,12 +124,7 @@ class MysqlFeedStoreTest extends Specification {
 
     private static DataSource initDataSource()
     {
-        final DataSource datasource = new ComboPooledDataSource()
-        datasource.setDriverClass('org.hsqldb.jdbcDriver')
-        datasource.setJdbcUrl("jdbc:hsqldb:mem:feed")
-        datasource.setUser('sa')
-        datasource.setPassword('')
-        datasource
+        new DriverDataSource('org.hsqldb.jdbcDriver', 'jdbc:hsqldb:mem:feed', 'sa', '')
     }
 
     private static initSchema(DataSource dataSource)

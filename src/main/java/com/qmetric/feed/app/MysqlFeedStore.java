@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.octo.java.sql.query.InsertQuery;
 import com.octo.java.sql.query.SelectQuery;
+import com.qmetric.feed.app.support.FeedStorePayloadRepresentation;
 import com.qmetric.feed.domain.FeedEntries;
 import com.qmetric.feed.domain.FeedEntry;
 import com.qmetric.feed.domain.FeedRestrictionCriteria;
@@ -19,8 +20,6 @@ import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.HandleCallback;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import org.skife.jdbi.v2.util.LongMapper;
-
-import javax.sql.DataSource;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -56,14 +55,14 @@ public class MysqlFeedStore implements FeedStore
 
     private final DBI dbi;
 
-    private final PayloadSerializationMapper payloadMapper;
+    private final FeedStorePayloadRepresentation payloadRepresentation;
 
     private final ResultSetMapper<FeedEntry> feedSqlMapper = new FeedSqlMapper();
 
-    public MysqlFeedStore(final DataSource dataSource, final PayloadSerializationMapper payloadMapper)
+    public MysqlFeedStore(final DBI dbi, final FeedStorePayloadRepresentation payloadSerializer)
     {
-        this.payloadMapper = payloadMapper;
-        dbi = new DBI(dataSource);
+        this.payloadRepresentation = payloadSerializer;
+        this.dbi = dbi;
     }
 
     @Override public FeedEntry store(final FeedEntry feedEntry)
@@ -72,7 +71,8 @@ public class MysqlFeedStore implements FeedStore
         {
             public Long withHandle(final Handle handle) throws Exception
             {
-                final InsertQuery query = insertInto(FEED).set(PUBLISHED_DATE, new Timestamp(feedEntry.publishedDate.getMillis())).set(PAYLOAD, payloadMapper.serializePayloadOf(feedEntry.payload));
+                final InsertQuery query =
+                        insertInto(FEED).set(PUBLISHED_DATE, new Timestamp(feedEntry.publishedDate.getMillis())).set(PAYLOAD, payloadRepresentation.serialize(feedEntry.payload));
 
                 return handle.createStatement(query.toSql()) //
                         .bindFromMap(query.getParams()) //
@@ -167,7 +167,7 @@ public class MysqlFeedStore implements FeedStore
             {
                 return !input.id.equals(excludeId);
             }
-        }).toImmutableList();
+        }).toList();
     }
 
     private class FeedSqlMapper implements ResultSetMapper<FeedEntry>
@@ -178,7 +178,7 @@ public class MysqlFeedStore implements FeedStore
 
             final DateTime publishedDate = new DateTime(resultSet.getTimestamp(PUBLISHED_DATE));
 
-            final Payload payload = payloadMapper.deserializePayload(resultSet.getString(PAYLOAD));
+            final Payload payload = payloadRepresentation.deserialize(resultSet.getString(PAYLOAD));
 
             return new FeedEntry(id, publishedDate, payload);
         }

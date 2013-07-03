@@ -4,7 +4,7 @@ feedName: Test feed
 
 feedEntryLinks:
   - rel: other
-    href: http://other.com/feed
+    href: http://other.com/feed/{testPayloadAttr}
 
   - rel: other2
     href: http://other2.com/feed

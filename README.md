@@ -47,27 +47,24 @@ Example configuration file:
 # This is to cater for load balancers, CNAMEs which may sit in front of your local server.
 publicBaseUrl: http://www.domain.com
 
-# Local http port the server will listen on.
-localPort: 5500
-
-# Name of feed (this is used as the root context of your feed url).
-feedName: test-feed
+# Name of feed
+feedName: Test feed
 
 # Customized links for feed entries. Links can optionally include named parameters that
-# refer to attributes of the payload.
+# refer to attributes of each feed entry's payload.
 feedEntryLinks:
-    - link:
-        rel: other
-        href: http://other.com
-    - link:
-        rel: other2
-        href: http://other2.com/{nameOfSomePayloadAttr}
+  - rel: other
+    href: http://other.com
+  - rel: other2
+    href: http://other2.com/{nameOfSomePayloadAttr}
 
-# Mysql data source for feed persistence
-mysqlDataSource:
-    url: jdbc:mysql://localhost:3306/feed
-    username: user
-    password: password
+# Data source for feed persistence (Only Mysql supported)
+databaseConfiguration:
+  driverClass: com.mysql.jdbc.Driver
+  user: usr
+  password: pwd
+  url: jdbc:mysql://localhost:3306/feed-db
+  validationQuery: select 1 from dual
 ```
 
 
@@ -87,7 +84,7 @@ To start server:
 
 ## To request the current feed:
 
-    GET: publicBaseUrl/feedName  HTTP 1.1
+    GET: publicBaseUrl/feed  HTTP 1.1
 
 ### Response:
 
@@ -96,23 +93,26 @@ To start server:
     ...
 
     {
+        "_name": "Test feed",
+
         "_links": {
             "self": {
-                "href": "publicBaseUrl/feedName"
+                "href": "publicBaseUrl/feed"
             }
         },
+
         "_embedded": {
             "entries": [
                 {
                     "_links": {
-                        "self": {"href": "publicBaseUrl/feedName/2"}
+                        "self": {"href": "publicBaseUrl/feed/2"}
                     },
                     "_id": "2",
                     "_published": "17/05/2013 15:58:07"
                 },
                 {
                     "_links": {
-                        "self": {"href": "publicBaseUrl/feedName/1"}
+                        "self": {"href": "publicBaseUrl/feed/1"}
                     },
                     "_id": "1",
                     "_published": "17/05/2013 14:05:07"
@@ -129,7 +129,7 @@ Notes:
 
 ## To request a specific entry from feed:
 
-    GET: publicBaseUrl/feedName/2  HTTP 1.1
+    GET: publicBaseUrl/feed/2  HTTP 1.1
 
 ### Response:
 
@@ -139,7 +139,7 @@ Notes:
 
     {
         "_links": {
-            "self": {"href": "publicBaseUrl/feedName/2"}
+            "self": {"href": "publicBaseUrl/feed/2"}
         },
         "_id": "2",
         "_published": "17/05/2013 15:58:07",
@@ -151,7 +151,7 @@ Notes:
 
 ## To publish a new feed entry containing given payload attributes:
 
-    POST: publicBaseUrl/feedName  HTTP 1.1
+    POST: publicBaseUrl/feed  HTTP 1.1
 
     {
         "customerId": "B18273645",
@@ -162,12 +162,12 @@ Notes:
 
     201 Created
     Content-Type: application/hal+json
-    Location: publicBaseUrl/feedName/3
+    Location: publicBaseUrl/feed/3
     ...
 
     {
         "_links": {
-            "self": {"href": "publicBaseUrl/feedName/3"}
+            "self": {"href": "publicBaseUrl/feed/3"}
         },
         "_id": "3",
         "_published": "17/05/2013 16:05:07",
@@ -181,7 +181,7 @@ Notes:
 
 ## To request the latest page of entries (defaults to max of 10 entries per page):
 
-    GET: publicBaseUrl/feedName/experimental  HTTP 1.1
+    GET: publicBaseUrl/feed/experimental  HTTP 1.1
 
 * Response includes a "next" link relation for navigating to an earlier page of entries (if no earlier entries, then the "next" link will not be included)
 

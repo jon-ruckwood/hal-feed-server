@@ -1,15 +1,18 @@
 {
+    "_name": "Test feed",
+
     "_links": {
         "self": {
-            "href": "http://localhost:1234/test-feed"
+            "href": "http://localhost:1234/feed"
         }
     },
+
     "_embedded": {
         "entries": [
             {
                 "_links": {
                     "self": {
-                        "href": "http://localhost:1234/test-feed/2"
+                        "href": "http://localhost:1234/feed/2"
                     }
                 },
                 "_id": "2",
@@ -18,7 +21,7 @@
             {
                 "_links": {
                     "self": {
-                        "href": "http://localhost:1234/test-feed/1"
+                        "href": "http://localhost:1234/feed/1"
                     }
                 },
                 "_id": "1",

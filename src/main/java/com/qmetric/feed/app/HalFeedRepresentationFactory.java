@@ -1,6 +1,5 @@
 package com.qmetric.feed.app;
 
-import com.google.common.base.Optional;
 import com.qmetric.feed.domain.FeedEntries;
 import com.qmetric.feed.domain.FeedEntry;
 import com.qmetric.feed.domain.FeedEntryLink;
@@ -23,6 +22,8 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
 
+    private static final String FEED_NAME_KEY = "_name";
+
     private static final String FEED_ENTRY_ID = "_id";
 
     private static final String PUBLISHED_DATE_KEY = "_published";
@@ -35,12 +36,15 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private final RepresentationFactory representationFactory = new DefaultRepresentationFactory();
 
+    private final String feedName;
+
     private final URI feedUri;
 
     private final Links links;
 
-    public HalFeedRepresentationFactory(final URI feedSelf, final Links links)
+    public HalFeedRepresentationFactory(final String feedName, final URI feedSelf, final Links links)
     {
+        this.feedName = feedName;
         this.feedUri = feedSelf;
         this.links = links;
     }
@@ -48,6 +52,7 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
     @Override public Representation format(final FeedEntries entries)
     {
         final Representation hal = representationFactory.newRepresentation(feedUri);
+        hal.withProperty(FEED_NAME_KEY, feedName);
 
         includeNavigationalLinks(entries, hal);
 
@@ -99,16 +104,7 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private String selfLinkForEntry(final FeedEntry feedEntry)
     {
-        final Optional<FeedEntryLink> customizedSelfLink = links.customizedSelfLinkForFeedEntry();
-
-        if (customizedSelfLink.isPresent())
-        {
-            return replaceNamedParametersInLink(customizedSelfLink.get(), feedEntry.payload);
-        }
-        else
-        {
-            return String.format("%s/%s", feedUri, feedEntry.id);
-        }
+        return String.format("%s/%s", feedUri, feedEntry.id);
     }
 
     private void includeAdditionalLinks(final FeedEntry feedEntry, final Representation representation, final Collection<FeedEntryLink> links)

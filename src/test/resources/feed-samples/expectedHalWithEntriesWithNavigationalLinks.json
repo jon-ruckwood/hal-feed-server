@@ -1,21 +1,24 @@
 {
+    "_name": "Test feed",
+
     "_links": {
         "self": {
-            "href": "http://localhost:1234/test-feed"
+            "href": "http://localhost:1234/feed"
         },
         "previous": {
-            "href": "http://localhost:1234/test-feed/experimental?laterThan=2"
+            "href": "http://localhost:1234/feed/experimental?laterThan=2"
         },
         "next": {
-            "href": "http://localhost:1234/test-feed/experimental?earlierThan=1"
+            "href": "http://localhost:1234/feed/experimental?earlierThan=1"
         }
     },
+
     "_embedded": {
         "entries": [
             {
                 "_links": {
                     "self": {
-                        "href": "http://localhost:1234/test-feed/2"
+                        "href": "http://localhost:1234/feed/2"
                     }
                 },
                 "_id": "2",
@@ -24,7 +27,7 @@
             {
                 "_links": {
                     "self": {
-                        "href": "http://localhost:1234/test-feed/1"
+                        "href": "http://localhost:1234/feed/1"
                     }
                 },
                 "_id": "1",
