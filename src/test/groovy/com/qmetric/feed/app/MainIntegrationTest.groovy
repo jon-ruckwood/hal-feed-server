@@ -40,7 +40,7 @@ class MainIntegrationTest extends Specification
     def "should retrieve existing FEED by id"()
     {
         given:
-        insertRenewalStop()
+        insertEntry()
 
         when:
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/test-feed/1", null);
@@ -58,7 +58,7 @@ class MainIntegrationTest extends Specification
         response.status == 201
     }
 
-    private void insertRenewalStop()
+    private void insertEntry()
     {
         sql.execute(String.format("INSERT INTO feed (id, published_date, payload) VALUES ( 1, CURDATE(), '%s')", PAYLOAD))
 
@@ -68,7 +68,7 @@ class MainIntegrationTest extends Specification
     {
         final DataSource dataSource = new ComboPooledDataSource()
         dataSource.setDriverClass('org.hsqldb.jdbcDriver')
-        dataSource.setJdbcUrl("jdbc:hsqldb:mem:renewal_stop")
+        dataSource.setJdbcUrl("jdbc:hsqldb:mem:feed")
         dataSource.setUser('sa')
         dataSource.setPassword('')
         dataSource
