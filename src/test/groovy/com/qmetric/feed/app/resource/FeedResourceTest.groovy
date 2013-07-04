@@ -7,13 +7,14 @@ import com.theoryinpractise.halbuilder.api.Link
 import com.theoryinpractise.halbuilder.api.Representation
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import javax.annotation.Nullable
 
+import static com.qmetric.feed.domain.FeedRestrictionCriteria.Filter
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON
 import static java.util.Collections.emptyList
 import static org.joda.time.DateTime.now
-import static com.qmetric.feed.domain.FeedRestrictionCriteria.Filter;
 
 class FeedResourceTest extends Specification {
 
@@ -99,6 +100,7 @@ class FeedResourceTest extends Specification {
         response.entity == "Feed entry not found"
     }
 
+    @Unroll
     def "should return expected response for feed page request"()
     {
         given:
