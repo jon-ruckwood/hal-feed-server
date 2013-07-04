@@ -234,12 +234,12 @@ Libraries written to consume from feeds:
 
 Provided by [Dropwizard](http://dropwizard.codahale.com/):
 
-* GET: serverhost:port/ping
+* GET: "serverhost:port/ping"
 
-* GET: serverhost:adminPort/ping
+* GET: "serverhost:adminPort/ping"
 
-* GET: serverhost:adminPort/healthcheck
+* GET: "serverhost:adminPort/healthcheck"
 
-* GET: serverhost:adminPort/healthcheck?pretty=true
+* GET: "serverhost:adminPort/healthcheck?pretty=true"
 
-* GET: serverhost:adminPort/threads
+* GET: "serverhost:adminPort/threads"
