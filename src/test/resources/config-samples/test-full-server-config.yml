@@ -9,6 +9,10 @@ feedEntryLinks:
   - rel: other2
     href: http://other2.com/feed
 
+hiddenPayloadAttributes:
+  - someIdToHide1
+  - someIdToHide2
+
 databaseConfiguration:
   driverClass: org.hsqldb.jdbcDriver
   user: sa

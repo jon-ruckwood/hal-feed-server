@@ -3,6 +3,7 @@ package com.qmetric.feed.app;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.qmetric.feed.app.resource.FeedResource;
 import com.qmetric.feed.domain.FeedEntryLink;
+import com.qmetric.feed.domain.HiddenPayloadAttributes;
 import com.qmetric.feed.domain.Links;
 import com.yammer.dropwizard.config.Configuration;
 import com.yammer.dropwizard.db.DatabaseConfiguration;
@@ -28,6 +29,9 @@ public class ServerConfiguration extends Configuration
     @JsonProperty
     private Collection<FeedEntryLink> feedEntryLinks = emptyList();
 
+    @JsonProperty
+    private Collection<String> hiddenPayloadAttributes = emptyList();
+
     @Valid
     @NotNull
     @JsonProperty
@@ -41,6 +45,11 @@ public class ServerConfiguration extends Configuration
     public Links getFeedEntryLinks()
     {
         return new Links(feedEntryLinks);
+    }
+
+    public HiddenPayloadAttributes getHiddenPayloadAttributes()
+    {
+        return new HiddenPayloadAttributes(hiddenPayloadAttributes);
     }
 
     public String getFeedName()

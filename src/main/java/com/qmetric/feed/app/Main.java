@@ -44,7 +44,8 @@ public class Main extends Service<ServerConfiguration>
         final FeedStore feedStore = initFeedStore(environment, configuration.getDatabaseConfiguration());
 
         final FeedRepresentationFactory<Representation> feedResponseFactory =
-                new HalFeedRepresentationFactory(configuration.getFeedName(), new URI(configuration.getFeedSelfLink()), configuration.getFeedEntryLinks());
+                new HalFeedRepresentationFactory(configuration.getFeedName(), new URI(configuration.getFeedSelfLink()), configuration.getFeedEntryLinks(),
+                                                 configuration.getHiddenPayloadAttributes());
 
         environment.addResource(new PingResource());
         environment.addResource(new FeedResource(new Feed(feedStore), feedResponseFactory));
@@ -54,7 +55,8 @@ public class Main extends Service<ServerConfiguration>
     {
         migratePendingDatabaseSchemaChanges(databaseConfiguration);
 
-        return new MysqlFeedStore(new DBIFactory().build(environment, databaseConfiguration, "database"), new FeedStorePayloadRepresentation(environment.getObjectMapperFactory().build()));
+        return new MysqlFeedStore(new DBIFactory().build(environment, databaseConfiguration, "database"),
+                                  new FeedStorePayloadRepresentation(environment.getObjectMapperFactory().build()));
     }
 
     private void migratePendingDatabaseSchemaChanges(final DatabaseConfiguration databaseConfiguration) throws Exception

@@ -1,10 +1,12 @@
 package com.qmetric.feed.app;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.qmetric.feed.domain.FeedEntries;
 import com.qmetric.feed.domain.FeedEntry;
 import com.qmetric.feed.domain.FeedEntryLink;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
+import com.qmetric.feed.domain.HiddenPayloadAttributes;
 import com.qmetric.feed.domain.Links;
 import com.qmetric.feed.domain.Payload;
 import com.theoryinpractise.halbuilder.DefaultRepresentationFactory;
@@ -13,12 +15,15 @@ import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import javax.annotation.Nullable;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
 
+import static com.google.common.collect.Maps.filterKeys;
 import static com.google.common.collect.Maps.transformValues;
 import static com.googlecode.flyway.core.util.StringUtils.replaceAll;
 import static org.apache.commons.lang3.text.StrSubstitutor.replace;
@@ -47,23 +52,37 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private final Links links;
 
-    public HalFeedRepresentationFactory(final String feedName, final URI feedSelf, final Links links)
+    private final HiddenPayloadAttributes hiddenPayloadAttributes;
+
+    public HalFeedRepresentationFactory(final String feedName, final URI feedSelf, final Links links, final HiddenPayloadAttributes hiddenPayloadAttributes)
     {
         this.feedName = feedName;
         this.feedUri = feedSelf;
         this.links = links;
+        this.hiddenPayloadAttributes = hiddenPayloadAttributes;
     }
 
     @Override public Representation format(final FeedEntries entries)
     {
         final Representation hal = representationFactory.newRepresentation(feedUri);
+
         hal.withProperty(FEED_NAME_KEY, feedName);
 
         includeNavigationalLinks(entries, hal);
 
         for (final FeedEntry entry : entries.all())
         {
-            hal.withRepresentation(ENTRIES_KEY, formatExcludingPayloadAttributes(entry));
+            final Representation entryHal = formatExcludingPayloadAttributes(entry);
+
+            includePayloadAttributes(entryHal, filterKeys(entry.payload.attributes, new Predicate<String>()
+            {
+                @Override public boolean apply(@Nullable final String input)
+                {
+                    return hiddenPayloadAttributes.isNotHidden(input);
+                }
+            }));
+
+            hal.withRepresentation(ENTRIES_KEY, entryHal);
         }
 
         return hal;
@@ -73,12 +92,17 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
     {
         final Representation hal = formatExcludingPayloadAttributes(entry);
 
-        for (final Map.Entry<String, Object> payloadAttribute : entry.payload.attributes.entrySet())
+        includePayloadAttributes(hal, entry.payload.attributes);
+
+        return hal;
+    }
+
+    private void includePayloadAttributes(final Representation hal, final Map<String, Object> attributes)
+    {
+        for (final Map.Entry<String, Object> payloadAttribute : attributes.entrySet())
         {
             hal.withProperty(payloadAttribute.getKey(), payloadAttribute.getValue());
         }
-
-        return hal;
     }
 
     private void includeNavigationalLinks(final FeedEntries entries, final Representation hal)

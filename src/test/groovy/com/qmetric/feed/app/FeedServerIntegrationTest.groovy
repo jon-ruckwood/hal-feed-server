@@ -14,7 +14,7 @@ import javax.ws.rs.core.MultivaluedMap
 import static java.util.Collections.singletonMap
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty
 
-class MainIntegrationTest extends Specification {
+class FeedServerIntegrationTest extends Specification {
 
     @Shared def DropwizardServiceRule<ServerConfiguration> server
 

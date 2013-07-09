@@ -60,6 +60,11 @@ feedEntryLinks:
   - rel: other2
     href: http://other2.com/{nameOfSomePayloadAttr}
 
+# Payload attributes to hide when viewing feed
+hiddenPayloadAttributes:
+  - customerId
+  - customerName
+
 # Data source for feed persistence (only Mysql supported)
 databaseConfiguration:
   driverClass: com.mysql.jdbc.Driver

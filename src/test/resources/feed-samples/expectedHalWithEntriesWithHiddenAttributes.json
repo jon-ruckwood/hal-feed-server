@@ -17,8 +17,7 @@
                 },
                 "_id": "2",
                 "_published": "14/05/2013 11:02:32",
-                "someId": "bbbb",
-                "value": "1000"
+                "someId": "bbbb"
             },
             {
                 "_links": {
@@ -28,8 +27,7 @@
                 },
                 "_id": "1",
                 "_published": "13/05/2013 11:02:32",
-                "someId": "aaaa",
-                "value": "2000"
+                "someId": "aaaa"
             }
         ]
     }
