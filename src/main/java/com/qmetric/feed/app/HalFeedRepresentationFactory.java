@@ -1,5 +1,6 @@
 package com.qmetric.feed.app;
 
+import com.google.common.base.Function;
 import com.qmetric.feed.domain.FeedEntries;
 import com.qmetric.feed.domain.FeedEntry;
 import com.qmetric.feed.domain.FeedEntryLink;
@@ -12,10 +13,14 @@ import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
 
+import static com.google.common.collect.Maps.transformValues;
+import static com.googlecode.flyway.core.util.StringUtils.replaceAll;
 import static org.apache.commons.lang3.text.StrSubstitutor.replace;
 
 public class HalFeedRepresentationFactory implements FeedRepresentationFactory<Representation>
@@ -117,6 +122,26 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private String replaceNamedParametersInLink(final FeedEntryLink link, final Payload payload)
     {
-        return replace(link.href, payload.attributes, "{", "}");
+        final Map<String, Object> encodedPayloadAttributes = transformValues(payload.attributes, new Function<Object, Object>()
+        {
+            @Override public Object apply(final Object input)
+            {
+                return input instanceof String ? encodeParameterForUrl((String) input) : input;
+            }
+        });
+
+        return replace(link.href, encodedPayloadAttributes, "{", "}");
+    }
+
+    private String encodeParameterForUrl(final String param)
+    {
+        try
+        {
+            return replaceAll(URLEncoder.encode(param, "UTF-8"), "+", "%20");
+        }
+        catch (final UnsupportedEncodingException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }

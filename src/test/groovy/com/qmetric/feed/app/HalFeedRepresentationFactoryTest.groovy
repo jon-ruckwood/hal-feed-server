@@ -80,8 +80,8 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entry with custom links"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedName, feedUri, new Links(newHashSet(new FeedEntryLink("someLink", "http://other"), new FeedEntryLink("someLinkWithNamedParam", "http://other/{someId}"))))
-        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Payload(singletonMap("someId", "s1234")))
+        final factory = new HalFeedRepresentationFactory(feedName, feedUri, new Links(newHashSet(new FeedEntryLink("someLink", "http://other"), new FeedEntryLink("someLinkWithNamedParam", "http://other/{someId}/{someNum}"))))
+        final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Payload(ImmutableMap.of("someId", "s 12/34", "someNum", 1234)))
 
         when:
         final hal = factory.format(entry)

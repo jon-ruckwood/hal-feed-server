@@ -7,10 +7,11 @@
             "href": "http://other"
         },
         "someLinkWithNamedParam": {
-            "href": "http://other/s1234"
+            "href": "http://other/s%2012%2F34/1234"
         }
     },
     "_id": "1",
     "_published": "13/05/2013 11:02:32",
-    "someId": "s1234"
+    "someId": "s 12/34",
+    "someNum": 1234
 }
