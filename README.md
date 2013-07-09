@@ -247,6 +247,8 @@ Provided by [Dropwizard](http://dropwizard.codahale.com/):
 
 * GET: "serverhost:adminPort/healthcheck"
 
-* GET: "serverhost:adminPort/healthcheck?pretty=true"
+* GET: "serverhost:adminPort/metrics"
+
+* GET: "serverhost:adminPort/metrics?pretty=true"
 
 * GET: "serverhost:adminPort/threads"
