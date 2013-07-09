@@ -191,6 +191,8 @@ Notes:
 
     POST: <publicBaseUrl>/feed  HTTP 1.1
 
+    Content-Type: application/hal+json
+
     {
         "customerId": "B18273645",
         "customerName": "Mr C Bob"
