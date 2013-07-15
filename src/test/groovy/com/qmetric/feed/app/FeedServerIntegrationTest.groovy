@@ -8,9 +8,11 @@ import com.theoryinpractise.halbuilder.DefaultRepresentationFactory
 import com.yammer.dropwizard.testing.junit.DropwizardServiceRule
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import javax.ws.rs.core.MultivaluedMap
 
+import static java.util.Collections.emptyMap
 import static java.util.Collections.singletonMap
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty
 
@@ -25,22 +27,20 @@ class FeedServerIntegrationTest extends Specification {
         server.startIfRequired()
     }
 
-    def "should return 200 on ping"()
-    {
-        when:
-        final resource = get(appUrl("/ping"))
-
-        then:
-        resource.status == 200
-    }
-
+    @Unroll
     def "should post new entry to feed"()
     {
         when:
-        final resource = post(appUrl("/feed/"), toJson(singletonMap("testPayloadAttr", "1234")))
+        final resource = post(appUrl("/feed/"), toJson(payloadAttributes))
 
         then:
-        resource.status == 201
+        resource.status == expectedStatus
+
+        where:
+        payloadAttributes                       | expectedStatus
+        singletonMap("testPayloadAttr", "1234") | 201
+        singletonMap("mistyped-testPayloadAttr", "1234") | 400
+        emptyMap()                              | 400
     }
 
     def "should retrieve feed"()
@@ -90,31 +90,17 @@ class FeedServerIntegrationTest extends Specification {
         resource.status == 404
     }
 
-    def "should return metrics via admin app"()
+    @Unroll
+    def "should return health check and metrics"()
     {
         when:
-        final resource = get(adminUrl("/metrics?pretty=true"))
+        final resource = get(url)
 
         then:
         resource.status == 200
-    }
 
-    def "should return ping via admin app"()
-    {
-        when:
-        final resource = get(adminUrl("/ping"))
-
-        then:
-        resource.status == 200
-    }
-
-    def "should return thread dump via admin app"()
-    {
-        when:
-        final resource = get(adminUrl("/threads"))
-
-        then:
-        resource.status == 200
+        where:
+        url << [appUrl("/ping"), adminUrl("/ping"), adminUrl("/healthcheck"), adminUrl("/metrics?pretty=true"), adminUrl("/threads")]
     }
 
     def cleanupSpec()

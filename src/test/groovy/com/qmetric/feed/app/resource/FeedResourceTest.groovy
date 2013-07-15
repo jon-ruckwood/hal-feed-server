@@ -74,6 +74,19 @@ class FeedResourceTest extends Specification {
         response.metadata.get("Location").first() == new URI(selfLinkHref)
     }
 
+    def "should return 400 when attempting to publish invalid entry to feed"()
+    {
+        given:
+        feed.publish(feedEntry.payload) >> { throw new IllegalArgumentException("Illegal argument") }
+
+        when:
+        final response = feedResource.postEntry(feedEntry.payload)
+
+        then:
+        response.entity == "Illegal argument"
+        response.status == 400
+    }
+
     def "should return response body representation for existing feed entry"()
     {
         given:
@@ -100,13 +113,12 @@ class FeedResourceTest extends Specification {
         response.entity == "Feed entry not found"
     }
 
-    @Unroll
-    def "should return expected response for feed page request"()
+    @Unroll def "should return expected response for feed page request"()
     {
         given:
         if (error)
         {
-            feed.retrieveBy(criteria) >> {throw new IllegalArgumentException("Illegal argument")}
+            feed.retrieveBy(criteria) >> { throw new IllegalArgumentException("Illegal argument") }
         }
         else
         {

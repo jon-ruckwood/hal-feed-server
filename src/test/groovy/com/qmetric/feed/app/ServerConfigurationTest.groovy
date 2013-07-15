@@ -19,6 +19,7 @@ class ServerConfigurationTest extends Specification {
         config.feedName == 'Test feed'
         newArrayList(config.feedEntryLinks.additionalLinksForFeedEntry()) == [new FeedEntryLink("other", 'http://other.com/feed'), new FeedEntryLink("other2", 'http://other2.com/feed')]
         config.hiddenPayloadAttributes.all() == ['someIdToHide1', 'someIdToHide2']
+        config.getPayloadValidationRules().all().iterator().hasNext()
         config.databaseConfiguration.collect { [it.driverClass, it.url, it.user, it.password] }.first() == ['org.hsqldb.jdbcDriver', 'jdbc:hsqldb:mem:feed', "sa", '']
     }
 
@@ -32,6 +33,7 @@ class ServerConfigurationTest extends Specification {
         config.feedName == 'Test feed'
         config.feedEntryLinks.additionalLinksForFeedEntry().isEmpty()
         config.hiddenPayloadAttributes.all().isEmpty()
+        !config.getPayloadValidationRules().all().iterator().hasNext()
         config.databaseConfiguration.collect { [it.driverClass, it.url, it.user, it.password] }.first() == ['org.hsqldb.jdbcDriver', 'jdbc:hsqldb:mem:feed', "sa", '']
     }
 

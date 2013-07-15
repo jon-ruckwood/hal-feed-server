@@ -48,7 +48,7 @@ public class Main extends Service<ServerConfiguration>
                                                  configuration.getHiddenPayloadAttributes());
 
         environment.addResource(new PingResource());
-        environment.addResource(new FeedResource(new Feed(feedStore), feedResponseFactory));
+        environment.addResource(new FeedResource(new Feed(feedStore, configuration.getPayloadValidationRules()), feedResponseFactory));
     }
 
     private FeedStore initFeedStore(final Environment environment, final DatabaseConfiguration databaseConfiguration) throws Exception

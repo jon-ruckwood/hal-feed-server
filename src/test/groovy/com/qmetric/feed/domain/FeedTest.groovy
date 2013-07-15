@@ -1,6 +1,7 @@
 package com.qmetric.feed.domain
 
 import com.google.common.base.Optional
+import com.qmetric.feed.domain.validation.PayloadValidationRules
 import org.joda.time.DateTime
 import spock.lang.Specification
 
@@ -9,11 +10,13 @@ import static java.util.Collections.emptyMap
 
 class FeedTest extends Specification {
 
+    final payloadValidationRules = Mock(PayloadValidationRules)
+
     final feedStore = Mock(FeedStore)
 
     final publishedDateProvider = Mock(PublishedDateProvider)
 
-    final feed = new Feed(feedStore, publishedDateProvider)
+    final feed = new Feed(feedStore, publishedDateProvider, payloadValidationRules)
 
     def "should retrieve all feed entries"()
     {
@@ -80,6 +83,7 @@ class FeedTest extends Specification {
         final persistedFeedEntry = feed.publish(payload)
 
         then:
+        1 * payloadValidationRules.checkValid(payload)
         persistedFeedEntry == expectedPersistedFeedEntry
     }
 }

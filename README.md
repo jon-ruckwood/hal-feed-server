@@ -60,6 +60,11 @@ feedEntryLinks:
   - rel: other2
     href: http://other2.com/{nameOfSomePayloadAttr}
 
+# Error if payload to publish does not contain the following mandatory attribute names
+mandatoryPayloadAttributes:
+  - customerId
+  - customerName
+
 # Payload attributes to hide when viewing feed
 hiddenPayloadAttributes:
   - customerId
@@ -71,7 +76,7 @@ databaseConfiguration:
   user: usr
   password: pwd
   url: jdbc:mysql://localhost:3306/feed-db
-  validationQuery: select 1 from dual
+  validationQuery: select 1
 
 # Local server HTTP configuration
 http:
@@ -96,7 +101,6 @@ logging:
   file:
     enabled: true
     timeZone: GB
-    logFormat: null
     currentLogFilename: /usr/local/logs/hal-feed.log
     archive: true
     archivedLogFilenamePattern: /usr/local/logs/hal-feed-%d.log.gz

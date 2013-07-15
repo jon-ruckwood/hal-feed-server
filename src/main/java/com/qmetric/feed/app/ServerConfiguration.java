@@ -5,6 +5,9 @@ import com.qmetric.feed.app.resource.FeedResource;
 import com.qmetric.feed.domain.FeedEntryLink;
 import com.qmetric.feed.domain.HiddenPayloadAttributes;
 import com.qmetric.feed.domain.Links;
+import com.qmetric.feed.domain.validation.MandatoryPayloadAttributesRule;
+import com.qmetric.feed.domain.validation.PayloadValidationRule;
+import com.qmetric.feed.domain.validation.PayloadValidationRules;
 import com.yammer.dropwizard.config.Configuration;
 import com.yammer.dropwizard.db.DatabaseConfiguration;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -13,17 +16,16 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import static java.util.Collections.emptyList;
 
 public class ServerConfiguration extends Configuration
 {
-    @NotEmpty
-    @JsonProperty
+    @NotEmpty @JsonProperty
     private String publicBaseUrl;
 
-    @NotEmpty
-    @JsonProperty
+    @NotEmpty @JsonProperty
     private String feedName;
 
     @JsonProperty
@@ -32,9 +34,10 @@ public class ServerConfiguration extends Configuration
     @JsonProperty
     private Collection<String> hiddenPayloadAttributes = emptyList();
 
-    @Valid
-    @NotNull
     @JsonProperty
+    private Collection<String> mandatoryPayloadAttributes = emptyList();
+
+    @Valid @NotNull @JsonProperty
     private DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
     public String getFeedSelfLink()
@@ -50,6 +53,12 @@ public class ServerConfiguration extends Configuration
     public HiddenPayloadAttributes getHiddenPayloadAttributes()
     {
         return new HiddenPayloadAttributes(hiddenPayloadAttributes);
+    }
+
+    public PayloadValidationRules getPayloadValidationRules()
+    {
+        return mandatoryPayloadAttributes.isEmpty() ? new PayloadValidationRules(Collections.<PayloadValidationRule>emptyList()) :
+               new PayloadValidationRules(Collections.<PayloadValidationRule>singleton(new MandatoryPayloadAttributesRule(mandatoryPayloadAttributes)));
     }
 
     public String getFeedName()

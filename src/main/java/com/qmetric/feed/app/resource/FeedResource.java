@@ -89,9 +89,16 @@ public class FeedResource
     @POST @Timed
     public Response postEntry(final Payload payload) throws URISyntaxException
     {
-        final Representation hal = feedRepresentationFactory.format(feed.publish(payload));
+        try
+        {
+            final Representation hal = feedRepresentationFactory.format(feed.publish(payload));
 
-        return created(new URI(hal.getResourceLink().getHref())).entity(hal.toString(HAL_JSON)).build();
+            return created(new URI(hal.getResourceLink().getHref())).entity(hal.toString(HAL_JSON)).build();
+        }
+        catch (IllegalArgumentException e)
+        {
+            return status(HTTP_BAD_REQUEST).entity(e.getMessage()).build();
+        }
     }
 
     private Optional<Id> toOptionalId(final Optional<String> idString)
