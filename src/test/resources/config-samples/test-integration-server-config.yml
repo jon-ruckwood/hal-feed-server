@@ -17,7 +17,6 @@ databaseConfiguration:
   user: sa
   password:
   url: jdbc:hsqldb:mem:feed
-  validationQuery: select 1
   # Enable mysql compatibility with hsqldb
   connectionInitializationStatements:
     - SET DATABASE SQL SYNTAX MYS TRUE
