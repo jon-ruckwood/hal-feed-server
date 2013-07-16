@@ -100,7 +100,7 @@ class FeedServerIntegrationTest extends Specification {
         resource.status == 200
 
         where:
-        url << [appUrl("/ping"), adminUrl("/ping"), adminUrl("/healthcheck"), adminUrl("/metrics?pretty=true"), adminUrl("/threads")]
+        url << [appUrl("/ping"), adminUrl("/ping"), adminUrl("/metrics?pretty=true"), adminUrl("/threads")]
     }
 
     def cleanupSpec()
