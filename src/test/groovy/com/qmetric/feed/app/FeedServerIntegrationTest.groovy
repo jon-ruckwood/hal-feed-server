@@ -37,10 +37,10 @@ class FeedServerIntegrationTest extends Specification {
         resource.status == expectedStatus
 
         where:
-        payloadAttributes                       | expectedStatus
-        singletonMap("testPayloadAttr", "1234") | 201
+        payloadAttributes                                | expectedStatus
+        singletonMap("testPayloadAttr", "1234")          | 201
         singletonMap("mistyped-testPayloadAttr", "1234") | 400
-        emptyMap()                              | 400
+        emptyMap()                                       | 400
     }
 
     def "should retrieve feed"()
