@@ -117,7 +117,7 @@ class FeedServerIntegrationTest extends Specification {
     private static post(final path, final body)
     {
         final requestHeaders = new MultivaluedMapImpl()
-        requestHeaders.putSingle("Content-Type", "application/hal+json")
+        requestHeaders.putSingle("Content-Type", "application/json")
 
         new Client().handle(new ClientRequestImpl(new URI(path), "POST", body, requestHeaders as MultivaluedMap<String, Object>))
     }
