@@ -196,7 +196,7 @@ Notes:
 
     POST: <publicBaseUrl>/feed  HTTP 1.1
 
-    Content-Type: application/hal+json
+    Content-Type: application/json
 
     {
         "customerId": "B18273645",
