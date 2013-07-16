@@ -9,8 +9,9 @@ feedEntryLinks:
   - rel: other2
     href: http://other2.com/feed
 
-mandatoryPayloadAttributes:
-  - testPayloadAttr
+validation:
+  mandatoryPayloadAttributes:
+    - testPayloadAttr
 
 databaseConfiguration:
   driverClass: org.hsqldb.jdbcDriver

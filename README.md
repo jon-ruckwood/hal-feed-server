@@ -60,10 +60,11 @@ feedEntryLinks:
   - rel: other2
     href: http://other2.com/{nameOfSomePayloadAttr}
 
-# Error if payload to publish does not contain the following mandatory attribute names
-mandatoryPayloadAttributes:
-  - customerId
-  - customerName
+validation:
+  # Error if payload to publish does not contain the following mandatory attribute names
+  mandatoryPayloadAttributes:
+    - customerId
+    - customerName
 
 # Payload attributes to hide when viewing feed
 hiddenPayloadAttributes:

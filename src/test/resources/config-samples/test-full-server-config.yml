@@ -13,9 +13,10 @@ hiddenPayloadAttributes:
   - someIdToHide1
   - someIdToHide2
 
-mandatoryPayloadAttributes:
-  - someIdToHide1
-  - someIdToHide2
+validation:
+  mandatoryPayloadAttributes:
+    - someIdToHide1
+    - someIdToHide2
 
 databaseConfiguration:
   driverClass: org.hsqldb.jdbcDriver

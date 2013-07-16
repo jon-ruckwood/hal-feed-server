@@ -35,7 +35,7 @@ public class ServerConfiguration extends Configuration
     private Collection<String> hiddenPayloadAttributes = emptyList();
 
     @JsonProperty
-    private Collection<String> mandatoryPayloadAttributes = emptyList();
+    private Validation validation = new Validation();
 
     @Valid @NotNull @JsonProperty
     private DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
@@ -57,8 +57,8 @@ public class ServerConfiguration extends Configuration
 
     public PayloadValidationRules getPayloadValidationRules()
     {
-        return mandatoryPayloadAttributes.isEmpty() ? new PayloadValidationRules(Collections.<PayloadValidationRule>emptyList()) :
-               new PayloadValidationRules(Collections.<PayloadValidationRule>singleton(new MandatoryPayloadAttributesRule(mandatoryPayloadAttributes)));
+        return validation.mandatoryPayloadAttributes.isEmpty() ? new PayloadValidationRules(Collections.<PayloadValidationRule>emptyList()) :
+               new PayloadValidationRules(Collections.<PayloadValidationRule>singleton(new MandatoryPayloadAttributesRule(validation.mandatoryPayloadAttributes)));
     }
 
     public String getFeedName()
@@ -69,5 +69,11 @@ public class ServerConfiguration extends Configuration
     public DatabaseConfiguration getDatabaseConfiguration()
     {
         return databaseConfiguration;
+    }
+
+    public class Validation
+    {
+        @JsonProperty
+        public Collection<String> mandatoryPayloadAttributes = emptyList();
     }
 }
