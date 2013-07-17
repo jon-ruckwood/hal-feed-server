@@ -107,7 +107,7 @@ logging:
     archivedFileCount: 5
 ```
 
-This is a [Dropwizard](http://dropwizard.codahale.com/) configuration file - refer for further configuration options available for "database", "http" and "logging".
+This is a [Dropwizard](http://dropwizard.codahale.com/) configuration file - refer for further configuration options available for "databaseConfiguration", "http" and "logging".
 
 
 # Database schema creation/ modification
