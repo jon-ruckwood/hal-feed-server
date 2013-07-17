@@ -60,7 +60,7 @@ feedEntryLinks:
     href: http://other2.com/{nameOfSomePayloadAttr}
 
 validation:
-  # Error if payload to publish does not contain the following mandatory attribute names
+  # Error if payload to publish does not contain the following mandatory attribute
   mandatoryPayloadAttributes:
     - customerId
     - customerName
