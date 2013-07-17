@@ -65,7 +65,7 @@ validation:
     - customerId
     - customerName
 
-# Payload attributes to hide when viewing feed
+# Payload attributes to hide when viewing a page of feed entries
 hiddenPayloadAttributes:
   - customerId
   - customerName
@@ -107,12 +107,12 @@ logging:
     archivedFileCount: 5
 ```
 
-This is a [Dropwizard](http://dropwizard.codahale.com/) configuration file - further configuration options available for database, http and logging.
+This is a [Dropwizard](http://dropwizard.codahale.com/) configuration file - refer for further configuration options available for "database", "http" and "logging".
 
 
 # Database schema creation/ modification
 
-Patches for the database schema are sync'd automatically during server startup.
+Patches for the database schema are sync'd automatically during server startup using [Flyway](http://flywaydb.org/).
 
 
 # Running server
@@ -165,7 +165,7 @@ To start server:
 
 * Response will include a "next" link relation for navigating to an earlier page of entries. If no earlier entries exist, then the "next" link will not be present.
 
-* Response will includes a "previous" link relation for navigating to a later page of entries. If no later entries exist, then the "previous" link will not be present.
+* Response will include a "previous" link relation for navigating to a later page of entries. If no later entries exist, then the "previous" link will not be present.
 
 * Each feed entry will include additional "_id" and "_published" attributes. The "_id" is guaranteed to be unique per feed entry. To avoid conflicts, it's advisable not to publish payload attributes prefixed with underscores.
 
@@ -232,24 +232,24 @@ Libraries written to consume from feeds:
 
 # Health check and metrics
 
-Provided by [Dropwizard](http://dropwizard.codahale.com/):
+Provided by [Dropwizard](http://dropwizard.codahale.com/), refer for more details.
 
-## Check whether server is running, either via application port, or admin port:
+Check whether server is running, either via application port, or admin port:
 
-    GET: "serverhost:port/ping"
+    GET: <serverhost>:<port>/ping
 
-    GET: "serverhost:adminPort/ping"
+    GET: <serverhost>:<adminPort>/ping
 
-## Retrieve health check of server, including database connectivity:
+Retrieve health check of server, including database connectivity:
 
-    GET: "serverhost:adminPort/healthcheck"
+    GET: <serverhost>:<adminPort>/healthcheck
 
-## Retrieve metrics of server:
+Retrieve metrics of server:
 
-    GET: "serverhost:adminPort/metrics"
+    GET: <serverhost>:<adminPort>/metrics
 
-    GET: "serverhost:adminPort/metrics?pretty=true"
+    GET: <serverhost>:<adminPort>/metrics?pretty=true
 
-## Retrieve a JVM thread dump:
+Retrieve a JVM thread dump:
 
-    GET: "serverhost:adminPort/threads"
+    GET: <serverhost>:<adminPort>/threads
