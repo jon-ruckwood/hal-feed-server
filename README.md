@@ -232,7 +232,7 @@ Libraries written to consume from feeds:
 
 # Health check and metrics
 
-Provided by [Dropwizard](http://dropwizard.codahale.com/), refer for more details.
+Provided by [Dropwizard](http://dropwizard.codahale.com/) - refer for more details.
 
 Check whether server is running, either via application port, or admin port:
 
