@@ -1,4 +1,5 @@
 package com.qmetric.feed.app
+
 import com.qmetric.feed.domain.*
 import groovy.json.JsonSlurper
 import org.joda.time.DateTime

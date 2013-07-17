@@ -51,12 +51,6 @@ public class FeedResource
     }
 
     @GET @Timed
-    public Response getAll()
-    {
-        return ok(feedRepresentationFactory.format(feed.retrieveAll()).toString(HAL_JSON)).build();
-    }
-
-    @GET @Path("experimental") @Timed
     public Response getPage(@QueryParam("earlierThan") final Optional<String> earlierThan, @QueryParam("laterThan") final Optional<String> laterThan,
                             @QueryParam("limit") final Optional<Integer> limit)
     {

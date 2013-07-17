@@ -6,10 +6,10 @@
             "href": "http://localhost:1234/feed"
         },
         "previous": {
-            "href": "http://localhost:1234/feed/experimental?laterThan=2"
+            "href": "http://localhost:1234/feed?laterThan=2"
         },
         "next": {
-            "href": "http://localhost:1234/feed/experimental?earlierThan=1"
+            "href": "http://localhost:1234/feed?earlierThan=1"
         }
     },
 

@@ -23,11 +23,6 @@ public class Feed
         this.payloadValidationRules = payloadValidationRules;
     }
 
-    public FeedEntries retrieveAll()
-    {
-        return store.retrieveAll();
-    }
-
     public FeedEntries retrieveBy(final FeedRestrictionCriteria criteria)
     {
         return store.retrieveBy(criteria);

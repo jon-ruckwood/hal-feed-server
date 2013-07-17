@@ -12,11 +12,9 @@ import spock.lang.Unroll
 
 import javax.ws.rs.core.MultivaluedMap
 
-import static java.util.Collections.emptyMap
-import static java.util.Collections.singletonMap
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty
 
-class FeedServerIntegrationTest extends Specification {
+class MainIntegrationTest extends Specification {
 
     @Shared def DropwizardServiceRule<ServerConfiguration> server
 
@@ -27,8 +25,7 @@ class FeedServerIntegrationTest extends Specification {
         server.startIfRequired()
     }
 
-    @Unroll
-    def "should post new entry to feed"()
+    @Unroll def "should post new entry to feed"()
     {
         when:
         final resource = post(appUrl("/feed/"), toJson(payloadAttributes))
@@ -37,16 +34,16 @@ class FeedServerIntegrationTest extends Specification {
         resource.status == expectedStatus
 
         where:
-        payloadAttributes                                | expectedStatus
-        singletonMap("testPayloadAttr", "1234")          | 201
-        singletonMap("mistyped-testPayloadAttr", "1234") | 400
-        emptyMap()                                       | 400
+        payloadAttributes                    | expectedStatus
+        ["testPayloadAttr": "1234"]          | 201
+        ["mistyped-testPayloadAttr": "1234"] | 400
+        [:]                                  | 400
     }
 
     def "should retrieve feed"()
     {
         given:
-        post(appUrl("/feed/"), toJson(singletonMap("testPayloadAttr", "1234")))
+        post(appUrl("/feed/"), toJson(["testPayloadAttr": "1234"]))
 
         when:
         final resource = get(appUrl("/feed/"))
@@ -59,10 +56,10 @@ class FeedServerIntegrationTest extends Specification {
     def "should retrieve latest page of feed entries"()
     {
         given:
-        post(appUrl("/feed/"), toJson(singletonMap("testPayloadAttr", "1234")))
+        post(appUrl("/feed/"), toJson(["testPayloadAttr": "1234"]))
 
         when:
-        final resource = get(appUrl("/feed/experimental"))
+        final resource = get(appUrl("/feed"))
 
         then:
         resource.status == 200
@@ -72,7 +69,7 @@ class FeedServerIntegrationTest extends Specification {
     def "should retrieve existing entry from feed"()
     {
         given:
-        final halResponse = new DefaultRepresentationFactory().readRepresentation(new InputStreamReader(post(appUrl("/feed/"), singletonMap("testPayloadAttr", "1234")).getEntityInputStream()))
+        final halResponse = new DefaultRepresentationFactory().readRepresentation(new InputStreamReader(post(appUrl("/feed/"), ["testPayloadAttr": "1234"]).getEntityInputStream()))
 
         when:
         final resource = get(appUrl("/feed/") + halResponse.getValue("_id"))
@@ -90,8 +87,7 @@ class FeedServerIntegrationTest extends Specification {
         resource.status == 404
     }
 
-    @Unroll
-    def "should return health check and metrics"()
+    @Unroll def "should return health check and metrics"()
     {
         when:
         final resource = get(url)
@@ -100,7 +96,7 @@ class FeedServerIntegrationTest extends Specification {
         resource.status == 200
 
         where:
-        url << [appUrl("/ping"), adminUrl("/ping"), adminUrl("/metrics?pretty=true"), adminUrl("/threads")]
+        url << [appUrl("/ping"), adminUrl("/ping"), adminUrl("/metrics"), adminUrl("/metrics?pretty=true"), adminUrl("/threads")]
     }
 
     def cleanupSpec()

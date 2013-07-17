@@ -1,5 +1,4 @@
 package com.qmetric.feed.app.resource
-
 import com.google.common.base.Function
 import com.google.common.base.Optional
 import com.qmetric.feed.domain.*
@@ -13,7 +12,6 @@ import javax.annotation.Nullable
 
 import static com.qmetric.feed.domain.FeedRestrictionCriteria.Filter
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON
-import static java.util.Collections.emptyList
 import static org.joda.time.DateTime.now
 
 class FeedResourceTest extends Specification {
@@ -22,9 +20,9 @@ class FeedResourceTest extends Specification {
 
     @Shared def selfLinkHref = "/self"
 
-    @Shared def entries = new FeedEntries(emptyList())
+    @Shared def entries = new FeedEntries([])
 
-    @Shared def feedEntry = new FeedEntry(Id.of("1"), now(), new Payload(Collections.<String, Object> singletonMap("stuff", "1234")))
+    @Shared def feedEntry = new FeedEntry(Id.of("1"), now(), new Payload(["stuff": "1234"]))
 
     final feed = Mock(Feed)
 
@@ -41,21 +39,6 @@ class FeedResourceTest extends Specification {
         representation.toString(HAL_JSON) >> responseBody
         feedRepresentationFactory.format(feedEntry) >> representation
         feedRepresentationFactory.format(entries) >> representation
-    }
-
-    def "should return 200 with response body representation of feed"()
-    {
-        given:
-        final entries = new FeedEntries(emptyList())
-        feed.retrieveAll() >> entries
-        feedRepresentationFactory.format(entries) >> representation
-
-        when:
-        final response = feedResource.getAll()
-
-        then:
-        response.status == 200
-        response.entity == responseBody
     }
 
     def "should return 201 with response body representation of published entry"()

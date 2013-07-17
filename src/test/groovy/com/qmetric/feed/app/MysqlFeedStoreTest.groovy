@@ -1,5 +1,4 @@
 package com.qmetric.feed.app
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.base.Optional
 import com.googlecode.flyway.core.Flyway
@@ -16,7 +15,6 @@ import javax.sql.DataSource
 
 import static FeedRestrictionCriteria.Filter
 import static com.google.common.base.Optional.absent
-import static java.util.Collections.emptyMap
 import static org.joda.time.DateTime.now
 
 class MysqlFeedStoreTest extends Specification {
@@ -55,29 +53,15 @@ class MysqlFeedStoreTest extends Specification {
         !store.retrieveBy(textualIdOfUnknownEntry).isPresent()
     }
 
-    def "should retrieve all feed entries in descending insertion order"()
-    {
-        given:
-        final all = setupPageOfEntries(10)
-
-        when:
-        final entries = store.retrieveAll().all()
-
-        then:
-        entries == all
-    }
-
     def "should retrieve nothing from empty feed"()
     {
         expect:
-        store.retrieveAll().all() == []
         store.retrieveBy(criteria(opt(Id.of("1")), absent(), 1)) == new FeedEntries([], false, false)
         store.retrieveBy(criteria(absent(), opt(Id.of("1")), 1)) == new FeedEntries([], false, false)
         store.retrieveBy(criteria(1)) == new FeedEntries([], false, false)
     }
 
-    @Unroll
-    def "should retrieve page of latest feed entries limited to max results in descending insertion order"()
+    @Unroll def "should retrieve page of latest feed entries limited to max results in descending insertion order"()
     {
         given:
         final all = setupPageOfEntries(10)
@@ -93,8 +77,7 @@ class MysqlFeedStoreTest extends Specification {
         11           | 0..10        | false               | false
     }
 
-    @Unroll
-    def "should retrieve page of feed entries occurring before a given entry in descending insertion order"()
+    @Unroll def "should retrieve page of feed entries occurring before a given entry in descending insertion order"()
     {
         given:
         final all = setupPageOfEntries(10)
@@ -110,8 +93,7 @@ class MysqlFeedStoreTest extends Specification {
         6                          | 3            | 7..10        | false               | true
     }
 
-    @Unroll
-    def "should retrieve page of feed entries occurring after a given entry in descending insertion order"()
+    @Unroll def "should retrieve page of feed entries occurring after a given entry in descending insertion order"()
     {
         given:
         final all = setupPageOfEntries(10)
@@ -164,7 +146,7 @@ class MysqlFeedStoreTest extends Specification {
 
     private List<FeedEntry> setupPageOfEntries(final int numberOfEntries)
     {
-        (1..numberOfEntries).collect {store.store(new FeedEntry(now(), new Payload(emptyMap())))}.reverse()
+        (1..numberOfEntries).collect { store.store(new FeedEntry(now(), new Payload([:]))) }.reverse()
     }
 
     private static Optional<Id> opt(final Id id)

@@ -1,4 +1,5 @@
 package com.qmetric.feed.app
+
 import com.qmetric.feed.domain.FeedEntryLink
 import com.yammer.dropwizard.testing.junit.DropwizardServiceRule
 import spock.lang.Specification

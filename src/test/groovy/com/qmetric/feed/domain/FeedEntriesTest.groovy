@@ -10,7 +10,7 @@ class FeedEntriesTest extends Specification {
     {
         expect:
         final entry = new FeedEntry(Id.of("1"), null, null)
-        final entriesList = singletonList(entry)
+        final entriesList = [entry]
         new FeedEntries(entriesList).all() == entriesList
         new FeedEntries(entriesList).first().get() == entry
         new FeedEntries(entriesList).last().get() == entry
@@ -28,7 +28,7 @@ class FeedEntriesTest extends Specification {
     def "should evaluate equality"()
     {
         expect:
-        new FeedEntries(singletonList(new FeedEntry(Id.of("1"), null, null))) == new FeedEntries(singletonList(new FeedEntry(Id.of("1"), null, null)))
-        new FeedEntries(singletonList(new FeedEntry(Id.of("1"), null, null))) != new FeedEntries(singletonList(new FeedEntry(Id.of("2"), null, null)))
+        new FeedEntries(singletonList(new FeedEntry(Id.of("1"), null, null))) == new FeedEntries([new FeedEntry(Id.of("1"), null, null)])
+        new FeedEntries(singletonList(new FeedEntry(Id.of("1"), null, null))) != new FeedEntries([new FeedEntry(Id.of("2"), null, null)])
     }
 }

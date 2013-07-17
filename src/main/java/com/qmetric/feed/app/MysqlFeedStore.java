@@ -83,19 +83,6 @@ public class MysqlFeedStore implements FeedStore
         return new FeedEntry(Id.of(String.valueOf(autoIncrementKey)), feedEntry.publishedDate, feedEntry.payload);
     }
 
-    @Override public FeedEntries retrieveAll()
-    {
-        return new FeedEntries(dbi.withHandle(new HandleCallback<List<FeedEntry>>()
-        {
-            public List<FeedEntry> withHandle(final Handle handle) throws Exception
-            {
-                return handle.createQuery(select(ALL).from(FEED).orderBy(ID).desc().toSql()) //
-                        .map(feedSqlMapper) //
-                        .list(); //
-            }
-        }));
-    }
-
     @Override public Optional<FeedEntry> retrieveBy(final Id id)
     {
         return isNumber(id.toString()) ? dbi.withHandle(new HandleCallback<Optional<FeedEntry>>()

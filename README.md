@@ -13,8 +13,7 @@ A feed entry contains a payload of data specific to your domain, represented by 
 
 Operations currently supported on feed:
 
-* GET to view complete feed of entries
-* GET to view paginated feed of entries (experimental)
+* GET to view paginated feed of entries
 * GET to view specific feed entry
 * POST to publish new feed entry
 
@@ -125,7 +124,7 @@ To start server:
 
 # Usage
 
-## To request the current feed:
+## To request the latest page of feed entries:
 
     GET: <publicBaseUrl>/feed  HTTP 1.1
 
@@ -164,10 +163,11 @@ To start server:
         }
     }
 
-Notes:
+* Response will include a "next" link relation for navigating to an earlier page of entries. If no earlier entries exist, then the "next" link will not be present.
 
-* Custom payload attributes are hidden when viewing the feed. These attributes are visible only when requesting a specific feed entry (via the "self" link).
-* Each feed entry will include additional "_id" and "_published" attributes. The "_id" is guaranteed to be unique per feed entry. To avoid conflicts, it's advisable not to prefix payload attributes with underscores.
+* Response will includes a "previous" link relation for navigating to a later page of entries. If no later entries exist, then the "previous" link will not be present.
+
+* Each feed entry will include additional "_id" and "_published" attributes. The "_id" is guaranteed to be unique per feed entry. To avoid conflicts, it's advisable not to publish payload attributes prefixed with underscores.
 
 
 ## To request a specific entry from feed:
@@ -222,18 +222,6 @@ Notes:
 
 
 
-# Pagination (experimental, until fully tested)
-
-## To request the latest page of entries (defaults to max of 10 entries per page):
-
-    GET: <publicBaseUrl>/feed/experimental  HTTP 1.1
-
-* Response includes a "next" link relation for navigating to an earlier page of entries (if no earlier entries, then the "next" link will not be included)
-
-* Response includes a "previous" link relation for navigating to a later page of entries (if no later entries, then the "previous" link will not be included)
-
-
-
 # Consuming feed
 
 Libraries written to consume from feeds:
@@ -242,18 +230,26 @@ Libraries written to consume from feeds:
 
 
 
-# Health check and Metrics
+# Health check and metrics
 
 Provided by [Dropwizard](http://dropwizard.codahale.com/):
 
-* GET: "serverhost:port/ping"
+## Check whether server is running, either via application port, or admin port:
 
-* GET: "serverhost:adminPort/ping"
+    GET: "serverhost:port/ping"
 
-* GET: "serverhost:adminPort/healthcheck"
+    GET: "serverhost:adminPort/ping"
 
-* GET: "serverhost:adminPort/metrics"
+## Retrieve health check of server, including database connectivity:
 
-* GET: "serverhost:adminPort/metrics?pretty=true"
+    GET: "serverhost:adminPort/healthcheck"
 
-* GET: "serverhost:adminPort/threads"
+## Retrieve metrics of server:
+
+    GET: "serverhost:adminPort/metrics"
+
+    GET: "serverhost:adminPort/metrics?pretty=true"
+
+## Retrieve a JVM thread dump:
+
+    GET: "serverhost:adminPort/threads"

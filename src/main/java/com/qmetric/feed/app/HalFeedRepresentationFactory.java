@@ -109,12 +109,12 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
     {
         if (entries.laterExists)
         {
-            hal.withLink(PREVIOUS_LINK_RELATION, String.format("%s/experimental?laterThan=%s", feedUri, entries.first().get().id));
+            hal.withLink(PREVIOUS_LINK_RELATION, String.format("%s?laterThan=%s", feedUri, entries.first().get().id));
         }
 
         if (entries.earlierExists)
         {
-            hal.withLink(NEXT_LINK_RELATION, String.format("%s/experimental?earlierThan=%s", feedUri, entries.last().get().id));
+            hal.withLink(NEXT_LINK_RELATION, String.format("%s?earlierThan=%s", feedUri, entries.last().get().id));
         }
     }
 

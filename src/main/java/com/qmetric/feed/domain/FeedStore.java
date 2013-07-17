@@ -4,8 +4,6 @@ import com.google.common.base.Optional;
 
 public interface FeedStore
 {
-    FeedEntries retrieveAll();
-
     FeedEntries retrieveBy(FeedRestrictionCriteria restriction);
 
     Optional<FeedEntry> retrieveBy(Id id);

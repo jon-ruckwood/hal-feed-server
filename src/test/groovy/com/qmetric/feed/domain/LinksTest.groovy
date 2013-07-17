@@ -11,6 +11,6 @@ class LinksTest extends Specification {
     def "should expose additional links for entry"()
     {
         expect:
-        newArrayList(new Links(newArrayList(additionalLinkForFeedEntry)).additionalLinksForFeedEntry()) == [additionalLinkForFeedEntry]
+        newArrayList(new Links([additionalLinkForFeedEntry]).additionalLinksForFeedEntry()) == [additionalLinkForFeedEntry]
     }
 }
