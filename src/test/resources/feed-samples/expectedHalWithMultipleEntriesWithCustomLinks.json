@@ -1,15 +1,18 @@
 {
+    "_name": "Test feed",
+
     "_links": {
         "self": {
-            "href": "http://localhost:1234/test-feed"
+            "href": "http://localhost:1234/feed"
         }
     },
+
     "_embedded": {
         "entries": [
             {
                 "_links": {
                     "self": {
-                        "href": "http://localhost:1234/test-feed/2"
+                        "href": "http://localhost:1234/feed/2"
                     },
                     "someLink": {
                         "href": "http://other"
@@ -19,12 +22,14 @@
                     }
                 },
                 "_id": "2",
-                "_published": "14/05/2013 11:02:32"
+                "_published": "14/05/2013 11:02:32",
+                "someId": "bbbb",
+                "value": "1000"
             },
             {
                 "_links": {
                     "self": {
-                        "href": "http://localhost:1234/test-feed/1"
+                        "href": "http://localhost:1234/feed/1"
                     },
                     "someLink": {
                         "href": "http://other"
@@ -34,7 +39,9 @@
                     }
                 },
                 "_id": "1",
-                "_published": "13/05/2013 11:02:32"
+                "_published": "13/05/2013 11:02:32",
+                "someId": "aaaa",
+                "value": "2000"
             }
         ]
     }

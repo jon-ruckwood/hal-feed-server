@@ -1,142 +1,72 @@
 package com.qmetric.feed.app;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.health.HealthCheckRegistry;
 import com.googlecode.flyway.core.Flyway;
-import com.qmetric.feed.app.configuration.DBHealthCheckBuilder;
-import com.qmetric.feed.app.configuration.HealthCheckConfiguration;
-import com.qmetric.feed.app.routes.PingRoute;
-import com.qmetric.feed.app.routes.PublishToFeedRoute;
-import com.qmetric.feed.app.routes.RetrieveAllFromFeedRoute;
-import com.qmetric.feed.app.routes.RetrieveEntryFromFeedRoute;
-import com.qmetric.feed.app.routes.RetrieveFromFeedRoute;
+import com.qmetric.feed.app.resource.FeedResource;
+import com.qmetric.feed.app.resource.PingResource;
+import com.qmetric.feed.app.support.FeedStorePayloadRepresentation;
+import com.qmetric.feed.app.support.JsonModuleFactory;
 import com.qmetric.feed.domain.Feed;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
 import com.qmetric.feed.domain.FeedStore;
-import com.qmetric.spark.metrics.HealthCheckRoute;
-import com.qmetric.spark.metrics.MetricsRoute;
-import com.qmetric.spark.metrics.RouteMeterWrapper;
-import com.qmetric.spark.metrics.RouteTimerWrapper;
 import com.theoryinpractise.halbuilder.api.Representation;
-import spark.Filter;
-import spark.Request;
-import spark.Response;
+import com.yammer.dropwizard.Service;
+import com.yammer.dropwizard.config.Bootstrap;
+import com.yammer.dropwizard.config.Environment;
+import com.yammer.dropwizard.db.DatabaseConfiguration;
+import com.yammer.dropwizard.db.ManagedDataSource;
+import com.yammer.dropwizard.db.ManagedDataSourceFactory;
+import com.yammer.dropwizard.jdbi.DBIFactory;
 
-import javax.sql.DataSource;
+import java.net.URI;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
-
-import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON;
-import static java.lang.String.format;
-import static spark.Spark.after;
-import static spark.Spark.get;
-import static spark.Spark.post;
-import static spark.Spark.setPort;
-
-public class Main
+public class Main extends Service<ServerConfiguration>
 {
     private static final String DEFAULT_CONF_FILE = "/usr/local/config/hal-feed-server/server-config.yml";
 
-    private final Configuration configuration;
+    private static final String SERVER_NAME = "HAL Feed Server";
 
-    private final DataSource dataSource;
-
-    private final MetricRegistry metricRegistry = new MetricRegistry();
-
-    private HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
-
-    public Main(final Configuration configuration, final DataSource dataSource)
+    public static void main(String[] args) throws Exception
     {
-        this.configuration = configuration;
-        this.dataSource = dataSource;
+        final String configurationPath = System.getProperty("conf", DEFAULT_CONF_FILE);
+
+        new Main().run(new String[] {"server", configurationPath});
     }
 
-    public static void main(String[] args) throws IOException, URISyntaxException, SQLException
+    @Override public void initialize(final Bootstrap<ServerConfiguration> configurationBootstrap)
     {
-        final Configuration configuration = Configuration.load(new FileInputStream(System.getProperty("conf", DEFAULT_CONF_FILE)));
+        configurationBootstrap.getObjectMapperFactory().registerModule(JsonModuleFactory.create());
 
-        final DataSource dataSource = DataSourceFactory.create(configuration.dataSourceConfiguration);
-
-        new Main(configuration, dataSource).start();
+        configurationBootstrap.setName(SERVER_NAME);
     }
 
-    public void start() throws URISyntaxException, IOException, SQLException
+    @Override public void run(final ServerConfiguration configuration, final Environment environment) throws Exception
     {
-        final FeedStore store = initFeedStore();
+        final FeedStore feedStore = initFeedStore(environment, configuration.getDatabaseConfiguration());
 
-        final Feed feed = new Feed(store);
+        final FeedRepresentationFactory<Representation> feedResponseFactory =
+                new HalFeedRepresentationFactory(configuration.getFeedName(), new URI(configuration.getFeedSelfLink()), configuration.getFeedEntryLinks(),
+                                                 configuration.getHiddenPayloadAttributes());
 
-        final FeedRepresentationFactory<Representation> feedResponseFactory = new HalFeedRepresentationFactory(configuration.feedSelfLink, configuration.feedEntryLinks);
-
-        configureSpark(feed, feedResponseFactory);
-
-        configureHealthCheck();
+        environment.addResource(new PingResource());
+        environment.addResource(new FeedResource(new Feed(feedStore, configuration.getPayloadValidationRules()), feedResponseFactory));
     }
 
-    private FeedStore initFeedStore()
+    private FeedStore initFeedStore(final Environment environment, final DatabaseConfiguration databaseConfiguration) throws Exception
     {
-        migratePendingDatabaseSchemaChanges(dataSource);
+        migratePendingDatabaseSchemaChanges(databaseConfiguration);
 
-        return new MysqlFeedStore(dataSource, new PayloadSerializationMapper());
+        return new MysqlFeedStore(new DBIFactory().build(environment, databaseConfiguration, "database"),
+                                  new FeedStorePayloadRepresentation(environment.getObjectMapperFactory().build()));
     }
 
-    private void migratePendingDatabaseSchemaChanges(final DataSource dataSource)
+    private void migratePendingDatabaseSchemaChanges(final DatabaseConfiguration databaseConfiguration) throws Exception
     {
+        final ManagedDataSource dataSource = new ManagedDataSourceFactory().build(databaseConfiguration);
+
         final Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
         flyway.migrate();
-    }
 
-    private void configureSpark(final Feed feed, final FeedRepresentationFactory<Representation> feedResponseFactory)
-    {
-        final String contextPath = configuration.feedSelfLink.getPath();
-
-        setPort(configuration.localPort);
-
-        after(new Filter()
-        {
-            @Override
-            public void handle(Request request, Response response)
-            {
-                response.type(HAL_JSON);
-            }
-        });
-
-        get(new PingRoute("/ping"));
-
-        // todo: remove once experimental pagination feature fully tested
-        get(new RetrieveAllFromFeedRoute(contextPath, feed, feedResponseFactory));
-
-        // todo drop the /experimental path once retrievalAll route removed
-        get(new RetrieveFromFeedRoute(format("%s/experimental", contextPath), feed, feedResponseFactory));
-
-        get(new RetrieveEntryFromFeedRoute(format("%s/:id", contextPath), feed, feedResponseFactory));
-
-        configurePostPublishToFeedRoute(contextPath, feed, feedResponseFactory);
-
-        get(new MetricsRoute(metricRegistry));
-
-        get(new HealthCheckRoute(healthCheckRegistry));
-    }
-
-    private void configureHealthCheck() throws SQLException
-    {
-
-        new HealthCheckConfiguration(healthCheckRegistry, new DBHealthCheckBuilder(configuration)).configure();
-    }
-
-    private void configurePostPublishToFeedRoute(final String contextPath, final Feed feed, final FeedRepresentationFactory<Representation> feedResponseFactory)
-    {
-
-        final PublishToFeedRoute publishToFeedRoute = new PublishToFeedRoute(contextPath, feed, feedResponseFactory, new PayloadSerializationMapper());
-        decorateRouteForMetrics(publishToFeedRoute, contextPath);
-    }
-
-    private void decorateRouteForMetrics(final PublishToFeedRoute publishToFeedRoute, final String contextPath)
-    {
-        post(new RouteMeterWrapper(contextPath, metricRegistry, new RouteTimerWrapper(contextPath, metricRegistry, publishToFeedRoute)));
+        dataSource.stop();
     }
 }

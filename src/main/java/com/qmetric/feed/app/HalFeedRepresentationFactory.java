@@ -1,10 +1,12 @@
 package com.qmetric.feed.app;
 
-import com.google.common.base.Optional;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.qmetric.feed.domain.FeedEntries;
 import com.qmetric.feed.domain.FeedEntry;
 import com.qmetric.feed.domain.FeedEntryLink;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
+import com.qmetric.feed.domain.HiddenPayloadAttributes;
 import com.qmetric.feed.domain.Links;
 import com.qmetric.feed.domain.Payload;
 import com.theoryinpractise.halbuilder.DefaultRepresentationFactory;
@@ -13,15 +15,24 @@ import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import javax.annotation.Nullable;
+
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
 
+import static com.google.common.collect.Maps.filterKeys;
+import static com.google.common.collect.Maps.transformValues;
+import static com.googlecode.flyway.core.util.StringUtils.replaceAll;
 import static org.apache.commons.lang3.text.StrSubstitutor.replace;
 
 public class HalFeedRepresentationFactory implements FeedRepresentationFactory<Representation>
 {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss");
+
+    private static final String FEED_NAME_KEY = "_name";
 
     private static final String FEED_ENTRY_ID = "_id";
 
@@ -35,25 +46,43 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private final RepresentationFactory representationFactory = new DefaultRepresentationFactory();
 
+    private final String feedName;
+
     private final URI feedUri;
 
     private final Links links;
 
-    public HalFeedRepresentationFactory(final URI feedSelf, final Links links)
+    private final HiddenPayloadAttributes hiddenPayloadAttributes;
+
+    public HalFeedRepresentationFactory(final String feedName, final URI feedSelf, final Links links, final HiddenPayloadAttributes hiddenPayloadAttributes)
     {
+        this.feedName = feedName;
         this.feedUri = feedSelf;
         this.links = links;
+        this.hiddenPayloadAttributes = hiddenPayloadAttributes;
     }
 
     @Override public Representation format(final FeedEntries entries)
     {
         final Representation hal = representationFactory.newRepresentation(feedUri);
 
+        hal.withProperty(FEED_NAME_KEY, feedName);
+
         includeNavigationalLinks(entries, hal);
 
         for (final FeedEntry entry : entries.all())
         {
-            hal.withRepresentation(ENTRIES_KEY, formatExcludingPayloadAttributes(entry));
+            final Representation entryHal = formatExcludingPayloadAttributes(entry);
+
+            includePayloadAttributes(entryHal, filterKeys(entry.payload.attributes, new Predicate<String>()
+            {
+                @Override public boolean apply(@Nullable final String input)
+                {
+                    return hiddenPayloadAttributes.isNotHidden(input);
+                }
+            }));
+
+            hal.withRepresentation(ENTRIES_KEY, entryHal);
         }
 
         return hal;
@@ -63,24 +92,29 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
     {
         final Representation hal = formatExcludingPayloadAttributes(entry);
 
-        for (final Map.Entry<String, Object> payloadAttribute : entry.payload.attributes.entrySet())
+        includePayloadAttributes(hal, entry.payload.attributes);
+
+        return hal;
+    }
+
+    private void includePayloadAttributes(final Representation hal, final Map<String, Object> attributes)
+    {
+        for (final Map.Entry<String, Object> payloadAttribute : attributes.entrySet())
         {
             hal.withProperty(payloadAttribute.getKey(), payloadAttribute.getValue());
         }
-
-        return hal;
     }
 
     private void includeNavigationalLinks(final FeedEntries entries, final Representation hal)
     {
         if (entries.laterExists)
         {
-            hal.withLink(PREVIOUS_LINK_RELATION, String.format("%s/experimental?laterThan=%s", feedUri, entries.first().get().id));
+            hal.withLink(PREVIOUS_LINK_RELATION, String.format("%s?laterThan=%s", feedUri, entries.first().get().id));
         }
 
         if (entries.earlierExists)
         {
-            hal.withLink(NEXT_LINK_RELATION, String.format("%s/experimental?earlierThan=%s", feedUri, entries.last().get().id));
+            hal.withLink(NEXT_LINK_RELATION, String.format("%s?earlierThan=%s", feedUri, entries.last().get().id));
         }
     }
 
@@ -99,16 +133,7 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private String selfLinkForEntry(final FeedEntry feedEntry)
     {
-        final Optional<FeedEntryLink> customizedSelfLink = links.customizedSelfLinkForFeedEntry();
-
-        if (customizedSelfLink.isPresent())
-        {
-            return replaceNamedParametersInLink(customizedSelfLink.get(), feedEntry.payload);
-        }
-        else
-        {
-            return String.format("%s/%s", feedUri, feedEntry.id);
-        }
+        return String.format("%s/%s", feedUri, feedEntry.id);
     }
 
     private void includeAdditionalLinks(final FeedEntry feedEntry, final Representation representation, final Collection<FeedEntryLink> links)
@@ -121,6 +146,26 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private String replaceNamedParametersInLink(final FeedEntryLink link, final Payload payload)
     {
-        return replace(link.href, payload.attributes, "{", "}");
+        final Map<String, Object> encodedPayloadAttributes = transformValues(payload.attributes, new Function<Object, Object>()
+        {
+            @Override public Object apply(final Object input)
+            {
+                return input instanceof String ? encodeParameterForUrl((String) input) : input;
+            }
+        });
+
+        return replace(link.href, encodedPayloadAttributes, "{", "}");
+    }
+
+    private String encodeParameterForUrl(final String param)
+    {
+        try
+        {
+            return replaceAll(URLEncoder.encode(param, "UTF-8"), "+", "%20");
+        }
+        catch (final UnsupportedEncodingException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 }

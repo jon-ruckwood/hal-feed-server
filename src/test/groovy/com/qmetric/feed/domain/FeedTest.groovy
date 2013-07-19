@@ -1,37 +1,24 @@
 package com.qmetric.feed.domain
 
 import com.google.common.base.Optional
+import com.qmetric.feed.domain.validation.PayloadValidationRules
 import org.joda.time.DateTime
 import spock.lang.Specification
 
-import static java.util.Collections.emptyList
-import static java.util.Collections.emptyMap
-
 class FeedTest extends Specification {
+
+    final payloadValidationRules = Mock(PayloadValidationRules)
 
     final feedStore = Mock(FeedStore)
 
     final publishedDateProvider = Mock(PublishedDateProvider)
 
-    final feed = new Feed(feedStore, publishedDateProvider)
-
-    def "should retrieve all feed entries"()
-    {
-        given:
-        final expectedEntries = new FeedEntries(emptyList())
-        feedStore.retrieveAll() >> expectedEntries
-
-        when:
-        final entries = feed.retrieveAll()
-
-        then:
-        entries == expectedEntries
-    }
+    final feed = new Feed(feedStore, publishedDateProvider, payloadValidationRules)
 
     def "should retrieve page of feed entries"()
     {
         given:
-        final expectedEntries = new FeedEntries(emptyList())
+        final expectedEntries = new FeedEntries([])
         final pageCriteria = Mock(FeedRestrictionCriteria)
         feedStore.retrieveBy(pageCriteria) >> expectedEntries
 
@@ -71,7 +58,7 @@ class FeedTest extends Specification {
     {
         given:
         final expectedPublishDate = new DateTime(2012, 1, 1, 0, 0, 0, 0)
-        final payload = new Payload(emptyMap())
+        final payload = new Payload([:])
         publishedDateProvider.publishedDate >> expectedPublishDate
         final expectedPersistedFeedEntry = new FeedEntry(Id.of("1"), expectedPublishDate, payload)
         feedStore.store(new FeedEntry(expectedPublishDate, payload)) >> expectedPersistedFeedEntry
@@ -80,6 +67,7 @@ class FeedTest extends Specification {
         final persistedFeedEntry = feed.publish(payload)
 
         then:
+        1 * payloadValidationRules.checkValid(payload)
         persistedFeedEntry == expectedPersistedFeedEntry
     }
 }

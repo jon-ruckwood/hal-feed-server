@@ -1,76 +1,135 @@
 package com.qmetric.feed.app
 
-import com.mchange.v2.c3p0.ComboPooledDataSource
-import groovy.sql.Sql
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.sun.jersey.api.client.Client
+import com.sun.jersey.client.impl.ClientRequestImpl
+import com.sun.jersey.core.util.MultivaluedMapImpl
+import com.theoryinpractise.halbuilder.DefaultRepresentationFactory
+import com.yammer.dropwizard.testing.junit.DropwizardServiceRule
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
-import javax.sql.DataSource
+import javax.ws.rs.core.MultivaluedMap
 
-class MainIntegrationTest extends Specification
-{
-    @Shared def dataSource = initDataSource();
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty
 
-    @Shared def sql = new Sql(dataSource)
+class MainIntegrationTest extends Specification {
 
-    @Shared def configuration
-
-    @Shared def testUtil
-
-    def PAYLOAD = "{\"key\" : \"value\"}"
+    @Shared def DropwizardServiceRule<ServerConfiguration> server
 
     def setupSpec()
     {
-        sql.execute("SET DATABASE SQL SYNTAX MYS TRUE");
-        configuration = Configuration.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("config-samples/integration-test-server-config.yml"));
-        testUtil = new SparkTestUtil(configuration.localPort);
-        new Main(configuration, dataSource).start();
+        server = new DropwizardServiceRule<ServerConfiguration>(Main.class, this.getClass().getResource("/config-samples/test-integration-server-config.yml").path)
+        //noinspection GroovyAccessibility
+        server.startIfRequired()
     }
 
-
-    def "ping should return 200 OK"()
+    @Unroll def "should post new entry to feed"()
     {
         when:
-        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/ping", null);
+        final resource = post(appUrl("/feed/"), toJson(payloadAttributes))
 
         then:
-        response.status == 200
+        resource.status == expectedStatus
+
+        where:
+        payloadAttributes                    | expectedStatus
+        ["testPayloadAttr": "1234"]          | 201
+        ["mistyped-testPayloadAttr": "1234"] | 400
+        [:]                                  | 400
     }
 
-    def "should retrieve existing FEED by id"()
+    def "should retrieve feed"()
     {
         given:
-        insertEntry()
+        post(appUrl("/feed/"), toJson(["testPayloadAttr": "1234"]))
 
         when:
-        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/test-feed/1", null);
+        final resource = get(appUrl("/feed/"))
 
         then:
-        response.status == 200
+        resource.status == 200
+        isNotEmpty(new DefaultRepresentationFactory().readRepresentation(new InputStreamReader(resource.getEntityInputStream())).getResourcesByRel("entries"))
     }
 
-    def "should publish to feed"()
+    def "should retrieve latest page of feed entries"()
+    {
+        given:
+        post(appUrl("/feed/"), toJson(["testPayloadAttr": "1234"]))
+
+        when:
+        final resource = get(appUrl("/feed"))
+
+        then:
+        resource.status == 200
+        isNotEmpty(new DefaultRepresentationFactory().readRepresentation(new InputStreamReader(resource.getEntityInputStream())).getResourcesByRel("entries"))
+    }
+
+    def "should retrieve existing entry from feed"()
+    {
+        given:
+        final halResponse = new DefaultRepresentationFactory().readRepresentation(new InputStreamReader(post(appUrl("/feed/"), ["testPayloadAttr": "1234"]).getEntityInputStream()))
+
+        when:
+        final resource = get(appUrl("/feed/") + halResponse.getValue("_id"))
+
+        then:
+        resource.status == 200
+    }
+
+    def "should return 404 when requesting an entry that does not exist in feed"()
     {
         when:
-        SparkTestUtil.UrlResponse response = testUtil.doMethod("POST", "/test-feed", PAYLOAD);
+        final resource = get(appUrl("/feed/unknown"))
 
         then:
-        response.status == 201
+        resource.status == 404
     }
 
-    private void insertEntry()
+    @Unroll def "should return health check and metrics"()
     {
-        sql.execute(String.format("INSERT INTO feed (id, published_date, payload) VALUES ( 1, CURDATE(), '%s')", PAYLOAD))
+        when:
+        final resource = get(url)
 
+        then:
+        resource.status == 200
+
+        where:
+        url << [appUrl("/ping"), adminUrl("/ping"), adminUrl("/metrics"), adminUrl("/metrics?pretty=true"), adminUrl("/threads")]
     }
 
-    private static DataSource initDataSource()
+    def cleanupSpec()
     {
-        final DataSource dataSource = new ComboPooledDataSource()
-        dataSource.setDriverClass('org.hsqldb.jdbcDriver')
-        dataSource.setJdbcUrl("jdbc:hsqldb:mem:feed")
-        dataSource.setUser('sa')
-        dataSource.setPassword('')
-        dataSource
+        //noinspection GroovyAccessibility
+        server.jettyServer.stop()
+    }
+
+    private static get(final path)
+    {
+        new Client().handle(new ClientRequestImpl(new URI(path), "GET"))
+    }
+
+    private static post(final path, final body)
+    {
+        final requestHeaders = new MultivaluedMapImpl()
+        requestHeaders.putSingle("Content-Type", "application/json")
+
+        new Client().handle(new ClientRequestImpl(new URI(path), "POST", body, requestHeaders as MultivaluedMap<String, Object>))
+    }
+
+    private static toJson(body)
+    {
+        new ObjectMapper().writeValueAsString(body)
+    }
+
+    private appUrl(path)
+    {
+        "http://localhost:" + server.getLocalPort() + path
+    }
+
+    private adminUrl(path)
+    {
+        "http://localhost:" + server.configuration.httpConfiguration.adminPort + path
     }
 }
