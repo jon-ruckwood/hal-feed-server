@@ -32,6 +32,9 @@ public class ServerConfiguration extends Configuration
     private Collection<FeedEntryLink> feedEntryLinks = emptyList();
 
     @JsonProperty
+    private int defaultEntriesPerPage = 10;
+
+    @JsonProperty
     private Collection<String> hiddenPayloadAttributes = emptyList();
 
     @JsonProperty
@@ -50,6 +53,11 @@ public class ServerConfiguration extends Configuration
         return new Links(feedEntryLinks);
     }
 
+    public int getDefaultEntriesPerPage()
+    {
+        return defaultEntriesPerPage;
+    }
+
     public HiddenPayloadAttributes getHiddenPayloadAttributes()
     {
         return new HiddenPayloadAttributes(hiddenPayloadAttributes);
@@ -57,8 +65,8 @@ public class ServerConfiguration extends Configuration
 
     public PayloadValidationRules getPayloadValidationRules()
     {
-        return validation.mandatoryPayloadAttributes.isEmpty() ? new PayloadValidationRules(Collections.<PayloadValidationRule>emptyList()) :
-               new PayloadValidationRules(Collections.<PayloadValidationRule>singleton(new MandatoryPayloadAttributesRule(validation.mandatoryPayloadAttributes)));
+        return validation.required.isEmpty() ? new PayloadValidationRules(Collections.<PayloadValidationRule>emptyList()) :
+               new PayloadValidationRules(Collections.<PayloadValidationRule>singleton(new MandatoryPayloadAttributesRule(validation.required)));
     }
 
     public String getFeedName()
@@ -74,6 +82,6 @@ public class ServerConfiguration extends Configuration
     public class Validation
     {
         @JsonProperty
-        public Collection<String> mandatoryPayloadAttributes = emptyList();
+        public Collection<String> required = emptyList();
     }
 }

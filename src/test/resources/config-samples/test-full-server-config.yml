@@ -9,12 +9,14 @@ feedEntryLinks:
   - rel: other2
     href: http://other2.com/feed
 
+defaultEntriesPerPage: 20
+
 hiddenPayloadAttributes:
   - someIdToHide1
   - someIdToHide2
 
 validation:
-  mandatoryPayloadAttributes:
+  required:
     - someIdToHide1
     - someIdToHide2
 

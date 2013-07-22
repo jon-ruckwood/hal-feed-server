@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static com.qmetric.feed.app.resource.FeedResource.*;
+import static com.qmetric.feed.app.resource.FeedResource.CONTEXT;
 import static com.qmetric.feed.domain.FeedRestrictionCriteria.Filter;
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON;
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -34,8 +34,6 @@ import static javax.ws.rs.core.Response.status;
 @Path(CONTEXT) @Produces(HAL_JSON)
 public class FeedResource
 {
-    private static final int DEFAULT_MAX_RESULTS_LIMIT = 10;
-
     private static final String NOT_FOUND_RESPONSE_BODY = "Feed entry not found";
 
     public static final String CONTEXT = "/feed";
@@ -44,10 +42,13 @@ public class FeedResource
 
     private final FeedRepresentationFactory<Representation> feedRepresentationFactory;
 
-    public FeedResource(final Feed feed, final FeedRepresentationFactory<Representation> feedRepresentationFactory)
+    private final int defaultEntriesPerPage;
+
+    public FeedResource(final Feed feed, final FeedRepresentationFactory<Representation> feedRepresentationFactory, final int defaultEntriesPerPage)
     {
         this.feed = feed;
         this.feedRepresentationFactory = feedRepresentationFactory;
+        this.defaultEntriesPerPage = defaultEntriesPerPage;
     }
 
     @GET @Timed
@@ -56,8 +57,9 @@ public class FeedResource
     {
         try
         {
-            return ok(feedRepresentationFactory.format(feed.retrieveBy(
-                    new FeedRestrictionCriteria(new Filter(toOptionalId(earlierThan), toOptionalId(laterThan)), limit.or(DEFAULT_MAX_RESULTS_LIMIT)))).toString(HAL_JSON)).build();
+            return ok(feedRepresentationFactory
+                              .format(feed.retrieveBy(new FeedRestrictionCriteria(new Filter(toOptionalId(earlierThan), toOptionalId(laterThan)), limit.or(defaultEntriesPerPage))))
+                              .toString(HAL_JSON)).build();
         }
         catch (IllegalArgumentException e)
         {

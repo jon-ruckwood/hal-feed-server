@@ -1,4 +1,5 @@
 package com.qmetric.feed.app.resource
+
 import com.google.common.base.Function
 import com.google.common.base.Optional
 import com.qmetric.feed.domain.*
@@ -32,7 +33,7 @@ class FeedResourceTest extends Specification {
 
     final link = Mock(Link)
 
-    final feedResource = new FeedResource(feed, feedRepresentationFactory)
+    final feedResource = new FeedResource(feed, feedRepresentationFactory, 10)
 
     def setup()
     {

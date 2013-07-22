@@ -9,8 +9,10 @@ feedEntryLinks:
   - rel: other2
     href: http://other2.com/feed
 
+defaultEntriesPerPage: 10
+
 validation:
-  mandatoryPayloadAttributes:
+  required:
     - testPayloadAttr
 
 databaseConfiguration:

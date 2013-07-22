@@ -59,9 +59,12 @@ feedEntryLinks:
   - rel: other2
     href: http://other2.com/{nameOfSomePayloadAttr}
 
+# Default number of feed entries to include per page
+defaultEntriesPerPage: 10
+
 validation:
-  # Error if payload to publish does not contain the following mandatory attribute
-  mandatoryPayloadAttributes:
+  # Error if payload to publish does not contain the following mandatory attributes
+  required:
     - customerId
     - customerName
 
