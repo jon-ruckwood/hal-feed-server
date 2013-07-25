@@ -11,7 +11,7 @@ A feed contains feed entries in descending order of publish date.
 
 A feed entry contains a payload of data specific to your domain, represented by any valid JSON.
 
-Operations currently supported on feed:
+Operations currently supported on a feed:
 
 * GET to view paginated feed of entries
 * GET to view specific feed entry
@@ -32,11 +32,11 @@ To build:
 
 # Configuration
 
-To configure the server, create a file in the following location
+To configure the server, create a file in the following location:
 
     /usr/local/config/hal-feed-server/server-config.yml
 
-or specify custom location via a system property,
+or specify a custom location for this file via a system property:
 
     java -Dconf=file-path -jar ...
 
@@ -173,7 +173,7 @@ To start server:
 * Each feed entry will include additional "_id" and "_published" attributes. The "_id" is guaranteed to be unique per feed entry. To avoid conflicts, it's advisable not to publish payload attributes prefixed with underscores.
 
 
-## To request a specific entry from feed:
+## To request a specific entry from the feed:
 
     GET: <publicBaseUrl>/feed/2  HTTP 1.1
 
