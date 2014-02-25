@@ -4,7 +4,7 @@
 
     <groupId>com.qmetric</groupId>
     <artifactId>hal-feed-server</artifactId>
-    <version>1.4</version>
+    <version>1.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Hal+JSON feed server</name>
     <description>Feed server based on HAL+JSON (http://stateless.co/hal_specification.html)</description>
