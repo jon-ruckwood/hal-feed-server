@@ -2,6 +2,10 @@ publicBaseUrl: http://www.domain.com
 
 feedName: Test feed
 
+authentication:
+  username: admin
+  password: password
+
 feedEntryLinks:
   - rel: other
     href: http://other.com/feed/{testPayloadAttr}

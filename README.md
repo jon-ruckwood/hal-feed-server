@@ -51,6 +51,11 @@ publicBaseUrl: http://www.domain.com
 # Name of feed
 feedName: Test feed
 
+# Basic HTTP Authentication (exclude if not required)
+authentication:
+  username: admin
+  password: password
+
 # Additional links to include for each feed entry. Links can optionally include named
 # parameters (i.e. {name}) that refer to attributes belonging to a feed entry's payload.
 feedEntryLinks:

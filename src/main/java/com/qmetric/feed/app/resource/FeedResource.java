@@ -2,6 +2,7 @@ package com.qmetric.feed.app.resource;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.qmetric.feed.app.auth.Principle;
 import com.qmetric.feed.domain.Feed;
 import com.qmetric.feed.domain.FeedEntry;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
@@ -9,6 +10,7 @@ import com.qmetric.feed.domain.FeedRestrictionCriteria;
 import com.qmetric.feed.domain.Id;
 import com.qmetric.feed.domain.Payload;
 import com.theoryinpractise.halbuilder.api.Representation;
+import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
 
 import javax.ws.rs.GET;
@@ -52,7 +54,7 @@ public class FeedResource
     }
 
     @GET @Timed
-    public Response getPage(@QueryParam("earlierThan") final Optional<String> earlierThan, @QueryParam("laterThan") final Optional<String> laterThan,
+    public Response getPage(@Auth final Principle principle, @QueryParam("earlierThan") final Optional<String> earlierThan, @QueryParam("laterThan") final Optional<String> laterThan,
                             @QueryParam("limit") final Optional<Integer> limit)
     {
         try
@@ -68,7 +70,7 @@ public class FeedResource
     }
 
     @GET @Path("{id}") @Timed
-    public Response getEntry(@PathParam("id") final String id)
+    public Response getEntry(@Auth final Principle principle, @PathParam("id") final String id)
     {
         final Optional<FeedEntry> feedEntry = feed.retrieveBy(Id.of(id));
 
@@ -83,7 +85,7 @@ public class FeedResource
     }
 
     @POST @Timed
-    public Response postEntry(final Payload payload) throws URISyntaxException
+    public Response postEntry(@Auth final Principle principle, final Payload payload) throws URISyntaxException
     {
         try
         {

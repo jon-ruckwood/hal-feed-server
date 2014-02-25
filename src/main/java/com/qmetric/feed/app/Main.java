@@ -1,6 +1,9 @@
 package com.qmetric.feed.app;
 
 import com.googlecode.flyway.core.Flyway;
+import com.qmetric.feed.app.auth.AnonymousAuthenticationProvider;
+import com.qmetric.feed.app.auth.BasicAuthenticator;
+import com.qmetric.feed.app.auth.Principle;
 import com.qmetric.feed.app.resource.FeedResource;
 import com.qmetric.feed.app.resource.PingResource;
 import com.qmetric.feed.app.support.FeedStorePayloadRepresentation;
@@ -8,8 +11,10 @@ import com.qmetric.feed.app.support.JsonModuleFactory;
 import com.qmetric.feed.domain.Feed;
 import com.qmetric.feed.domain.FeedRepresentationFactory;
 import com.qmetric.feed.domain.FeedStore;
+import com.sun.jersey.spi.inject.InjectableProvider;
 import com.theoryinpractise.halbuilder.api.Representation;
 import com.yammer.dropwizard.Service;
+import com.yammer.dropwizard.auth.basic.BasicAuthProvider;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 import com.yammer.dropwizard.db.DatabaseConfiguration;
@@ -41,6 +46,8 @@ public class Main extends Service<ServerConfiguration>
 
     @Override public void run(final ServerConfiguration configuration, final Environment environment) throws Exception
     {
+        environment.addProvider(getAuthenticationProvider(configuration));
+
         final FeedStore feedStore = initFeedStore(environment, configuration.getDatabaseConfiguration());
 
         final FeedRepresentationFactory<Representation> feedResponseFactory =
@@ -68,5 +75,19 @@ public class Main extends Service<ServerConfiguration>
         flyway.migrate();
 
         dataSource.stop();
+    }
+
+    private InjectableProvider getAuthenticationProvider(final ServerConfiguration configuration)
+    {
+        if (configuration.getAuthentication().isPresent())
+        {
+            return new BasicAuthProvider<Principle>(
+                    new BasicAuthenticator(configuration.getAuthentication().get().getUsername(),
+                                           configuration.getAuthentication().get().getPassword().toCharArray()), "restricted");
+        }
+        else
+        {
+            return new AnonymousAuthenticationProvider();
+        }
     }
 }

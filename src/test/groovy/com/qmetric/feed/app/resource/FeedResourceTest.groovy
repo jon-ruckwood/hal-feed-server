@@ -50,7 +50,7 @@ class FeedResourceTest extends Specification {
         representation.getResourceLink() >> link
 
         when:
-        final response = feedResource.postEntry(feedEntry.payload)
+        final response = feedResource.postEntry(null, feedEntry.payload)
 
         then:
         response.entity == responseBody
@@ -64,7 +64,7 @@ class FeedResourceTest extends Specification {
         feed.publish(feedEntry.payload) >> { throw new IllegalArgumentException("Illegal argument") }
 
         when:
-        final response = feedResource.postEntry(feedEntry.payload)
+        final response = feedResource.postEntry(null, feedEntry.payload)
 
         then:
         response.entity == "Illegal argument"
@@ -77,7 +77,7 @@ class FeedResourceTest extends Specification {
         feed.retrieveBy(feedEntry.id) >> Optional.of(feedEntry)
 
         when:
-        final response = feedResource.getEntry(feedEntry.id.toString())
+        final response = feedResource.getEntry(null, feedEntry.id.toString())
 
         then:
         response.entity == "response body"
@@ -90,7 +90,7 @@ class FeedResourceTest extends Specification {
         feed.retrieveBy(feedEntry.id) >> Optional.absent()
 
         when:
-        final response = feedResource.getEntry(feedEntry.id.toString())
+        final response = feedResource.getEntry(null, feedEntry.id.toString())
 
         then:
         response.status == 404
@@ -110,7 +110,7 @@ class FeedResourceTest extends Specification {
         }
 
         when:
-        final response = feedResource.getPage(optionalIdToOptionalStr(criteria.filter.earlierThan), optionalIdToOptionalStr(criteria.filter.laterThan), Optional.of(criteria.limit))
+        final response = feedResource.getPage(null, optionalIdToOptionalStr(criteria.filter.earlierThan), optionalIdToOptionalStr(criteria.filter.laterThan), Optional.of(criteria.limit))
 
         then:
         response.status == expectedStatus

@@ -1,6 +1,7 @@
 package com.qmetric.feed.app;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Optional;
 import com.qmetric.feed.app.resource.FeedResource;
 import com.qmetric.feed.domain.FeedEntryLink;
 import com.qmetric.feed.domain.HiddenPayloadAttributes;
@@ -10,6 +11,7 @@ import com.qmetric.feed.domain.validation.PayloadValidationRule;
 import com.qmetric.feed.domain.validation.PayloadValidationRules;
 import com.yammer.dropwizard.config.Configuration;
 import com.yammer.dropwizard.db.DatabaseConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
@@ -27,6 +29,9 @@ public class ServerConfiguration extends Configuration
 
     @NotEmpty @JsonProperty
     private String feedName;
+
+    @Valid @JsonProperty
+    private Authentication authentication = new Authentication();
 
     @JsonProperty
     private Collection<FeedEntryLink> feedEntryLinks = emptyList();
@@ -83,5 +88,34 @@ public class ServerConfiguration extends Configuration
     {
         @JsonProperty
         public Collection<String> required = emptyList();
+    }
+
+    public Optional<Authentication> getAuthentication()
+    {
+        return authentication.isPresent() ? Optional.of(authentication) : Optional.<Authentication>absent();
+    }
+
+    public static class Authentication
+    {
+        @JsonProperty
+        private String username;
+
+        @JsonProperty
+        private String password;
+
+        public String getUsername()
+        {
+            return username;
+        }
+
+        public String getPassword()
+        {
+            return password;
+        }
+
+        public boolean isPresent()
+        {
+            return StringUtils.isNotBlank(username);
+        }
     }
 }

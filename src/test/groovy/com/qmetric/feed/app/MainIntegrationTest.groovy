@@ -2,6 +2,7 @@ package com.qmetric.feed.app
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.sun.jersey.api.client.Client
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter
 import com.sun.jersey.client.impl.ClientRequestImpl
 import com.sun.jersey.core.util.MultivaluedMapImpl
 import com.theoryinpractise.halbuilder.DefaultRepresentationFactory
@@ -15,6 +16,10 @@ import javax.ws.rs.core.MultivaluedMap
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty
 
 class MainIntegrationTest extends Specification {
+
+    static final username = "admin"
+
+    static final password = "password"
 
     @Shared def DropwizardServiceRule<ServerConfiguration> server
 
@@ -105,22 +110,29 @@ class MainIntegrationTest extends Specification {
         server.jettyServer.stop()
     }
 
-    private static get(final path)
+    private static get(final path, final String user = username, final String pswd = password)
     {
-        new Client().handle(new ClientRequestImpl(new URI(path), "GET"))
+        client(user, pswd).handle(new ClientRequestImpl(new URI(path), "GET"))
     }
 
-    private static post(final path, final body)
+    private static post(final path, final body, final String user = username, final String pswd = password)
     {
         final requestHeaders = new MultivaluedMapImpl()
         requestHeaders.putSingle("Content-Type", "application/json")
 
-        new Client().handle(new ClientRequestImpl(new URI(path), "POST", body, requestHeaders as MultivaluedMap<String, Object>))
+        client(user, pswd).handle(new ClientRequestImpl(new URI(path), "POST", body, requestHeaders as MultivaluedMap<String, Object>))
     }
 
     private static toJson(body)
     {
         new ObjectMapper().writeValueAsString(body)
+    }
+
+    private static Client client(final String username, final String password)
+    {
+        final client = new Client()
+        client.addFilter(new HTTPBasicAuthFilter(username, password));
+        client
     }
 
     private appUrl(path)
