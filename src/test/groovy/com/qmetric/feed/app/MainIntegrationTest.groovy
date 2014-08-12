@@ -101,7 +101,7 @@ class MainIntegrationTest extends Specification {
         resource.status == 200
 
         where:
-        url << [appUrl("/ping"), adminUrl("/ping"), adminUrl("/metrics"), adminUrl("/metrics?pretty=true"), adminUrl("/threads")]
+        url << [appUrl("/ping"), appUrl("/healthcheck"), adminUrl("/ping"), adminUrl("/metrics"), adminUrl("/metrics?pretty=true"), adminUrl("/threads")]
     }
 
     def cleanupSpec()

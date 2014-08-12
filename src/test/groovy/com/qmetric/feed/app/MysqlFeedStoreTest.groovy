@@ -1,4 +1,5 @@
 package com.qmetric.feed.app
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.common.base.Optional
 import com.googlecode.flyway.core.Flyway
@@ -38,6 +39,15 @@ class MysqlFeedStoreTest extends Specification {
     def cleanup()
     {
         sql.execute("delete from feed")
+    }
+
+    def "should know when connection established"()
+    {
+        when:
+        store.checkConnectivity()
+
+        then:
+        notThrown(RuntimeException)
     }
 
     def "should retrieve feed entry by id"()

@@ -65,6 +65,18 @@ public class MysqlFeedStore implements FeedStore
         this.dbi = dbi;
     }
 
+    @Override public void checkConnectivity()
+    {
+        dbi.withHandle(new HandleCallback<Boolean>()
+        {
+            public Boolean withHandle(final Handle handle) throws Exception
+            {
+                handle.createQuery("SELECT 1 FROM feed LIMIT 1").first();
+                return true;
+            }
+        });
+    }
+
     @Override public FeedEntry store(final FeedEntry feedEntry)
     {
         final long autoIncrementKey = dbi.withHandle(new HandleCallback<Long>()

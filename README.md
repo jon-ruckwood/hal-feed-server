@@ -251,6 +251,7 @@ Check whether server is running, either via application port, or admin port:
 Retrieve health check of server, including database connectivity:
 
     GET: <serverhost>:<adminPort>/healthcheck
+    GET: <serverhost>:<port>/healthcheck
 
 Retrieve metrics of server:
 
