@@ -27,8 +27,6 @@ import com.yammer.dropwizard.db.ManagedDataSourceFactory;
 import com.yammer.dropwizard.jdbi.DBIFactory;
 import com.yammer.dropwizard.json.ObjectMapperFactory;
 
-import java.net.URI;
-
 public class Main extends Service<ServerConfiguration>
 {
     private static final String DEFAULT_CONF_FILE = "/usr/local/config/hal-feed-server/server-config.yml";
@@ -56,12 +54,12 @@ public class Main extends Service<ServerConfiguration>
         final FeedStore feedStore = initFeedStore(environment, configuration.getDatabaseConfiguration());
 
         final FeedRepresentationFactory<Representation> feedResponseFactory =
-                new HalFeedRepresentationFactory(configuration.getFeedName(), new URI(configuration.getFeedSelfLink()), configuration.getFeedEntryLinks(),
+                new HalFeedRepresentationFactory(configuration.getFeedName(), configuration.getFeedEntryLinks(),
                                                  configuration.getHiddenPayloadAttributes());
 
         environment.addResource(new PingResource());
         environment.addResource(new HealthCheckResource(configureHealthChecks(feedStore)));
-        environment.addResource(new FeedResource(new Feed(feedStore, configuration.getPayloadValidationRules()), feedResponseFactory, configuration.getDefaultEntriesPerPage()));
+        environment.addResource(new FeedResource(configuration.getPublicBaseUrl(), new Feed(feedStore, configuration.getPayloadValidationRules()), feedResponseFactory, configuration.getDefaultEntriesPerPage()));
     }
 
     private HealthCheckRegistry configureHealthChecks(final FeedStore feedStore)

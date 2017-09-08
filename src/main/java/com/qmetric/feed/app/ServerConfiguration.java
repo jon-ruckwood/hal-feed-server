@@ -2,7 +2,6 @@ package com.qmetric.feed.app;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Optional;
-import com.qmetric.feed.app.resource.FeedResource;
 import com.qmetric.feed.domain.FeedEntryLink;
 import com.qmetric.feed.domain.HiddenPayloadAttributes;
 import com.qmetric.feed.domain.Links;
@@ -16,7 +15,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import java.util.Collection;
 import java.util.Collections;
 
@@ -24,7 +22,7 @@ import static java.util.Collections.emptyList;
 
 public class ServerConfiguration extends Configuration
 {
-    @NotEmpty @JsonProperty
+    @JsonProperty
     private String publicBaseUrl;
 
     @NotEmpty @JsonProperty
@@ -48,9 +46,9 @@ public class ServerConfiguration extends Configuration
     @Valid @NotNull @JsonProperty
     private DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
-    public String getFeedSelfLink()
+    public String getPublicBaseUrl()
     {
-        return publicBaseUrl + FeedResource.CONTEXT;
+        return publicBaseUrl;
     }
 
     public Links getFeedEntryLinks()

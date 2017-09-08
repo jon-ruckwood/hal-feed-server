@@ -1,8 +1,10 @@
 package com.qmetric.feed.domain;
 
+import java.net.URI;
+
 public interface FeedRepresentationFactory<T>
 {
-    T format(FeedEntries entries);
+    T format(URI feedUri, FeedEntries entries);
 
-    T format(FeedEntry entry);
+    T format(URI feedUri, FeedEntry entry);
 }

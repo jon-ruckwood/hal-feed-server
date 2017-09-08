@@ -23,11 +23,11 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entries"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedName, feedUri, NO_LINKS, HiddenPayloadAttributes.NONE)
+        final factory = new HalFeedRepresentationFactory(feedName, NO_LINKS, HiddenPayloadAttributes.NONE)
         final entries = new FeedEntries([entry2, entry1])
 
         when:
-        final hal = factory.format(entries)
+        final hal = factory.format(feedUri, entries)
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonFrom('/feed-samples/expectedHalWithMultipleEntries.json')
@@ -36,11 +36,11 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entries with custom links"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedName, feedUri, new Links([new FeedEntryLink("someLink", "http://other"), new FeedEntryLink("someLinkWithNamedParam", "http://other/{someId}")]), HiddenPayloadAttributes.NONE)
+        final factory = new HalFeedRepresentationFactory(feedName, new Links([new FeedEntryLink("someLink", "http://other"), new FeedEntryLink("someLinkWithNamedParam", "http://other/{someId}")]), HiddenPayloadAttributes.NONE)
         final entries = new FeedEntries([entry2, entry1])
 
         when:
-        final hal = factory.format(entries)
+        final hal = factory.format(feedUri, entries)
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonFrom('/feed-samples/expectedHalWithMultipleEntriesWithCustomLinks.json')
@@ -49,11 +49,11 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entry"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedName, feedUri, NO_LINKS, HiddenPayloadAttributes.NONE)
+        final factory = new HalFeedRepresentationFactory(feedName, NO_LINKS, HiddenPayloadAttributes.NONE)
         final entry = entry1
 
         when:
-        final hal = factory.format(entry)
+        final hal = factory.format(feedUri, entry)
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonFrom('/feed-samples/expectedHalWithSingleEntry.json')
@@ -62,11 +62,11 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entry with complex payload"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedName, feedUri, NO_LINKS, HiddenPayloadAttributes.NONE)
+        final factory = new HalFeedRepresentationFactory(feedName, NO_LINKS, HiddenPayloadAttributes.NONE)
         final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Payload(["nested": ["someId": "aaaa"], "arr": ["a", "b", "c"]]))
 
         when:
-        final hal = factory.format(entry)
+        final hal = factory.format(feedUri, entry)
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonFrom('/feed-samples/expectedHalWithSingleEntryWithComplexPayload.json')
@@ -75,11 +75,11 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation of entry with custom links"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedName, feedUri, new Links([new FeedEntryLink("someLink", "http://other"), new FeedEntryLink("someLinkWithNamedParam", "http://other/{someId}/{someNum}")]), HiddenPayloadAttributes.NONE)
+        final factory = new HalFeedRepresentationFactory(feedName, new Links([new FeedEntryLink("someLink", "http://other"), new FeedEntryLink("someLinkWithNamedParam", "http://other/{someId}/{someNum}")]), HiddenPayloadAttributes.NONE)
         final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Payload(["someId": "s 12/34", "someNum": 1234]))
 
         when:
-        final hal = factory.format(entry)
+        final hal = factory.format(feedUri, entry)
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonFrom('/feed-samples/expectedHalWithSingleEntryWithCustomLinks.json')
@@ -88,11 +88,11 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should apply templated attr in returned hal+json representation with custom link with unresolved named parameter"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedName, feedUri, new Links([new FeedEntryLink("someLink", "http://other/{unresolved}")]), HiddenPayloadAttributes.NONE)
+        final factory = new HalFeedRepresentationFactory(feedName, new Links([new FeedEntryLink("someLink", "http://other/{unresolved}")]), HiddenPayloadAttributes.NONE)
         final entry = new FeedEntry(Id.of("1"), new DateTime(2013, 5, 13, 11, 2, 32), new Payload([:]))
 
         when:
-        final hal = factory.format(entry)
+        final hal = factory.format(feedUri, entry)
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonFrom('/feed-samples/expectedHalWithTemplatedCustomLink.json')
@@ -101,11 +101,11 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should return hal+json representation for page of entries with navigational links"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedName, feedUri, NO_LINKS, HiddenPayloadAttributes.NONE)
+        final factory = new HalFeedRepresentationFactory(feedName, NO_LINKS, HiddenPayloadAttributes.NONE)
         final entries = new FeedEntries([entry2, entry1], true, true)
 
         when:
-        final hal = factory.format(entries)
+        final hal = factory.format(feedUri, entries)
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonFrom('/feed-samples/expectedHalWithEntriesWithNavigationalLinks.json')
@@ -114,11 +114,11 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should never hide payload attributes for representation of single entry"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedName, feedUri, NO_LINKS, new HiddenPayloadAttributes(["someId", "value"]))
+        final factory = new HalFeedRepresentationFactory(feedName, NO_LINKS, new HiddenPayloadAttributes(["someId", "value"]))
         final entry = entry1
 
         when:
-        final hal = factory.format(entry)
+        final hal = factory.format(feedUri, entry)
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonFrom('/feed-samples/expectedHalWithSingleEntry.json')
@@ -127,11 +127,11 @@ class HalFeedRepresentationFactoryTest extends Specification {
     def "should hide payload attributes for feed representation"()
     {
         given:
-        final factory = new HalFeedRepresentationFactory(feedName, feedUri, NO_LINKS, new HiddenPayloadAttributes(["value"]))
+        final factory = new HalFeedRepresentationFactory(feedName, NO_LINKS, new HiddenPayloadAttributes(["value"]))
         final entries = new FeedEntries([entry2, entry1])
 
         when:
-        final hal = factory.format(entries)
+        final hal = factory.format(feedUri, entries)
 
         then:
         jsonSlurper.parseText(hal.toString(HAL_JSON)) == jsonFrom('/feed-samples/expectedHalWithEntriesWithHiddenAttributes.json')

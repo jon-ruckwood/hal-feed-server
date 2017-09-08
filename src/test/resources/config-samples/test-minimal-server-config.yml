@@ -1,5 +1,3 @@
-publicBaseUrl: http://www.domain.com
-
 feedName: Test feed
 
 databaseConfiguration:

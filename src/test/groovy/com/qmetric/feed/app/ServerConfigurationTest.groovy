@@ -16,7 +16,7 @@ class ServerConfigurationTest extends Specification {
         final config = loadConfig("/config-samples/test-full-server-config.yml")
 
         then:
-        config.feedSelfLink == 'http://www.domain.com/feed'
+        config.publicBaseUrl == 'http://www.domain.com'
         config.feedName == 'Test feed'
         newArrayList(config.feedEntryLinks.additionalLinksForFeedEntry()) == [new FeedEntryLink("other", 'http://other.com/feed'), new FeedEntryLink("other2", 'http://other2.com/feed')]
         config.getDefaultEntriesPerPage() == 20
@@ -31,7 +31,6 @@ class ServerConfigurationTest extends Specification {
         final config = loadConfig("/config-samples/test-minimal-server-config.yml")
 
         then:
-        config.feedSelfLink == 'http://www.domain.com/feed'
         config.feedName == 'Test feed'
         config.feedEntryLinks.additionalLinksForFeedEntry().isEmpty()
         config.getDefaultEntriesPerPage() == 10

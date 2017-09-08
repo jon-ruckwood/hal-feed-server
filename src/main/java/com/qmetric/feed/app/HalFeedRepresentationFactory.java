@@ -48,31 +48,29 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
 
     private final String feedName;
 
-    private final URI feedUri;
 
     private final Links links;
 
     private final HiddenPayloadAttributes hiddenPayloadAttributes;
 
-    public HalFeedRepresentationFactory(final String feedName, final URI feedSelf, final Links links, final HiddenPayloadAttributes hiddenPayloadAttributes)
+    public HalFeedRepresentationFactory(final String feedName, final Links links, final HiddenPayloadAttributes hiddenPayloadAttributes)
     {
         this.feedName = feedName;
-        this.feedUri = feedSelf;
         this.links = links;
         this.hiddenPayloadAttributes = hiddenPayloadAttributes;
     }
 
-    @Override public Representation format(final FeedEntries entries)
+    @Override public Representation format(final URI feedURI, final FeedEntries entries)
     {
-        final Representation hal = representationFactory.newRepresentation(feedUri);
+        final Representation hal = representationFactory.newRepresentation(feedURI);
 
         hal.withProperty(FEED_NAME_KEY, feedName);
 
-        includeNavigationalLinks(entries, hal);
+        includeNavigationalLinks(feedURI, entries, hal);
 
         for (final FeedEntry entry : entries.all())
         {
-            final Representation entryHal = formatExcludingPayloadAttributes(entry);
+            final Representation entryHal = formatExcludingPayloadAttributes(feedURI, entry);
 
             includePayloadAttributes(entryHal, filterKeys(entry.payload.attributes, new Predicate<String>()
             {
@@ -88,9 +86,9 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         return hal;
     }
 
-    @Override public Representation format(final FeedEntry entry)
+    @Override public Representation format(final URI feedURI, final FeedEntry entry)
     {
-        final Representation hal = formatExcludingPayloadAttributes(entry);
+        final Representation hal = formatExcludingPayloadAttributes(feedURI, entry);
 
         includePayloadAttributes(hal, entry.payload.attributes);
 
@@ -105,22 +103,22 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         }
     }
 
-    private void includeNavigationalLinks(final FeedEntries entries, final Representation hal)
+    private void includeNavigationalLinks(URI feedURI, final FeedEntries entries, final Representation hal)
     {
         if (entries.laterExists)
         {
-            hal.withLink(PREVIOUS_LINK_RELATION, String.format("%s?laterThan=%s", feedUri, entries.first().get().id));
+            hal.withLink(PREVIOUS_LINK_RELATION, String.format("%s?laterThan=%s", feedURI, entries.first().get().id));
         }
 
         if (entries.earlierExists)
         {
-            hal.withLink(NEXT_LINK_RELATION, String.format("%s?earlierThan=%s", feedUri, entries.last().get().id));
+            hal.withLink(NEXT_LINK_RELATION, String.format("%s?earlierThan=%s", feedURI, entries.last().get().id));
         }
     }
 
-    private Representation formatExcludingPayloadAttributes(final FeedEntry entry)
+    private Representation formatExcludingPayloadAttributes(URI feedURI, final FeedEntry entry)
     {
-        final Representation hal = representationFactory.newRepresentation(selfLinkForEntry(entry));
+        final Representation hal = representationFactory.newRepresentation(selfLinkForEntry(feedURI, entry));
 
         includeAdditionalLinks(entry, hal, links.additionalLinksForFeedEntry());
 
@@ -131,9 +129,9 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         return hal;
     }
 
-    private String selfLinkForEntry(final FeedEntry feedEntry)
+    private String selfLinkForEntry(URI feedURI, final FeedEntry feedEntry)
     {
-        return String.format("%s/%s", feedUri, feedEntry.id);
+        return String.format("%s/%s", feedURI, feedEntry.id);
     }
 
     private void includeAdditionalLinks(final FeedEntry feedEntry, final Representation representation, final Collection<FeedEntryLink> links)

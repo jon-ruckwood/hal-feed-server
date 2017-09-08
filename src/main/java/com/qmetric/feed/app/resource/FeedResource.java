@@ -12,6 +12,8 @@ import com.qmetric.feed.domain.Payload;
 import com.theoryinpractise.halbuilder.api.Representation;
 import com.yammer.dropwizard.auth.Auth;
 import com.yammer.metrics.annotation.Timed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -19,8 +21,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-
+import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -46,21 +49,26 @@ public class FeedResource
 
     private final int defaultEntriesPerPage;
 
-    public FeedResource(final Feed feed, final FeedRepresentationFactory<Representation> feedRepresentationFactory, final int defaultEntriesPerPage)
+    private final URI feedURI;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FeedResource.class);
+
+    public FeedResource(String publicBaseUrl, final Feed feed, final FeedRepresentationFactory<Representation> feedRepresentationFactory, final int defaultEntriesPerPage)
     {
         this.feed = feed;
         this.feedRepresentationFactory = feedRepresentationFactory;
         this.defaultEntriesPerPage = defaultEntriesPerPage;
+        this.feedURI = toFeedURI(publicBaseUrl);
     }
 
     @GET @Timed
-    public Response getPage(@Auth final Principle principle, @QueryParam("earlierThan") final Optional<String> earlierThan, @QueryParam("laterThan") final Optional<String> laterThan,
+    public Response getPage(@Context UriInfo uriInfo, @Auth final Principle principle, @QueryParam("earlierThan") final Optional<String> earlierThan, @QueryParam("laterThan") final Optional<String> laterThan,
                             @QueryParam("limit") final Optional<Integer> limit)
     {
         try
         {
             return ok(feedRepresentationFactory
-                              .format(feed.retrieveBy(new FeedRestrictionCriteria(new Filter(toOptionalId(earlierThan), toOptionalId(laterThan)), limit.or(defaultEntriesPerPage))))
+                              .format(resolveFeedURI(uriInfo), feed.retrieveBy(new FeedRestrictionCriteria(new Filter(toOptionalId(earlierThan), toOptionalId(laterThan)), limit.or(defaultEntriesPerPage))))
                               .toString(HAL_JSON)).build();
         }
         catch (IllegalArgumentException e)
@@ -70,13 +78,13 @@ public class FeedResource
     }
 
     @GET @Path("{id}") @Timed
-    public Response getEntry(@Auth final Principle principle, @PathParam("id") final String id)
+    public Response getEntry(@Context UriInfo uriInfo, @Auth final Principle principle, @PathParam("id") final String id)
     {
         final Optional<FeedEntry> feedEntry = feed.retrieveBy(Id.of(id));
 
         if (feedEntry.isPresent())
         {
-            return ok(feedRepresentationFactory.format(feedEntry.get()).toString(HAL_JSON)).build();
+            return ok(feedRepresentationFactory.format(resolveFeedURI(uriInfo), feedEntry.get()).toString(HAL_JSON)).build();
         }
         else
         {
@@ -85,11 +93,11 @@ public class FeedResource
     }
 
     @POST @Timed
-    public Response postEntry(@Auth final Principle principle, final Payload payload) throws URISyntaxException
+    public Response postEntry(@Context UriInfo uriInfo, @Auth final Principle principle, final Payload payload) throws URISyntaxException
     {
         try
         {
-            final Representation hal = feedRepresentationFactory.format(feed.publish(payload));
+            final Representation hal = feedRepresentationFactory.format(resolveFeedURI(uriInfo), feed.publish(payload));
 
             return created(new URI(hal.getResourceLink().getHref())).entity(hal.toString(HAL_JSON)).build();
         }
@@ -108,5 +116,24 @@ public class FeedResource
                 return Id.of(input);
             }
         });
+    }
+
+    private URI resolveFeedURI(UriInfo uriInfo) {
+        return feedURI != null
+            ? feedURI
+            : uriInfo.getBaseUriBuilder().path(FeedResource.CONTEXT).build();
+    }
+
+    private URI toFeedURI(String publicBaseUrl) {
+        try {
+            if (publicBaseUrl == null) {
+                LOGGER.info("publicBaseUrl is not set, 'self' will be determined through the HTTP-request");
+                return null;
+            } else {
+                return new URI(publicBaseUrl + FeedResource.CONTEXT);
+            }
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("cannot construct valid feedURI");
+        }
     }
 }
