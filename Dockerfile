@@ -1,6 +1,6 @@
 FROM openjdk:7-alpine
 
-MAINTAINER QMetric Group Ltd <no-reply@qmetric.com>
+MAINTAINER QMetric Group Ltd
 
 RUN apk add --update mysql mysql-client && rm -f /var/cache/apk/*
 
