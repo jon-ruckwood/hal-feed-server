@@ -262,3 +262,19 @@ Retrieve metrics of server:
 Retrieve a JVM thread dump:
 
     GET: <serverhost>:<adminPort>/threads
+
+# Docker
+
+The intended use of the image is for local development and testing, it is not suitable for 'production' use.
+
+To build the 'embedded' Docker image for the service and install it locally:
+
+```bash
+mvn -Pbuild-docker-image package
+``` 
+
+This image contains an instance of MySQL, which is used for feed persistence. It exposes the main and admin Dropwizard ports, to run:
+
+```bash
+docker run -p18080:8080 -p18081:8081 qmetric/hal-feed-server:$VERSION-embedded
+``` 
