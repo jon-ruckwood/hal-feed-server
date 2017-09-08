@@ -1,0 +1,49 @@
+publicBaseUrl: http://localhost:8080
+
+feedName: Test Feed
+
+# authentication:
+  # username: admin
+  # password: password
+
+# feedEntryLinks:
+  # - rel: other
+    # href: http://other.com
+  # - rel: other2
+    # href: http://other2.com/{nameOfSomePayloadAttr}
+
+defaultEntriesPerPage: 10
+
+# validation:
+  # Error if payload to publish does not contain the following mandatory attributes
+  # required:
+    # - customerId
+    # - customerName
+
+# hiddenPayloadAttributes:
+  # - customerId
+  # - customerName
+
+# Data source for feed persistence (only Mysql supported)
+databaseConfiguration:
+  driverClass: com.mysql.jdbc.Driver
+  user: usr
+  password: pwd
+  url: jdbc:mysql://localhost:3306/feed_db
+  validationQuery: select 1
+
+# Local server HTTP configuration
+http:
+  port: 8080
+  adminPort: 8081
+  requestLog:
+    timeZone: GB
+    console:
+      enabled: true
+
+# Logging configuration
+logging:
+  level: INFO
+  console:
+    enabled: true
+    timeZone: GB
