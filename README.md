@@ -276,5 +276,5 @@ mvn -Pbuild-docker-image package
 This image contains an instance of MySQL, which is used for feed persistence. It exposes the main and admin Dropwizard ports, to run:
 
 ```bash
-docker run -p18080:8080 -p18081:8081 qmetric/hal-feed-server:$VERSION-embedded
+docker run -p18080:8080 -p18081:8081 hal-feed-server:$VERSION-embedded
 ``` 

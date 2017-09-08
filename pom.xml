@@ -262,7 +262,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <repository>qmetric/hal-feed-server</repository>
+                            <repository>hal-feed-server</repository>
                             <tag>${project.version}-embedded</tag>
                         </configuration>
                     </plugin>
