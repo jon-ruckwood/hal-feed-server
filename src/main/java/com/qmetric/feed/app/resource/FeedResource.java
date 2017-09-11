@@ -58,7 +58,7 @@ public class FeedResource
         this.feed = feed;
         this.feedRepresentationFactory = feedRepresentationFactory;
         this.defaultEntriesPerPage = defaultEntriesPerPage;
-        this.feedURI = toFeedURI(publicBaseUrl);
+        this.feedURI = toFeedUri(publicBaseUrl);
     }
 
     @GET @Timed
@@ -67,9 +67,9 @@ public class FeedResource
     {
         try
         {
-            return ok(feedRepresentationFactory
-                              .format(resolveFeedURI(uriInfo), feed.retrieveBy(new FeedRestrictionCriteria(new Filter(toOptionalId(earlierThan), toOptionalId(laterThan)), limit.or(defaultEntriesPerPage))))
-                              .toString(HAL_JSON)).build();
+            return ok(feedRepresentationFactory.format(resolveFeedURI(uriInfo), feed.retrieveBy(new FeedRestrictionCriteria(new Filter(toOptionalId(earlierThan), toOptionalId(laterThan)), limit.or(defaultEntriesPerPage))))
+                    .toString(HAL_JSON))
+                    .build();
         }
         catch (IllegalArgumentException e)
         {
@@ -84,7 +84,10 @@ public class FeedResource
 
         if (feedEntry.isPresent())
         {
-            return ok(feedRepresentationFactory.format(resolveFeedURI(uriInfo), feedEntry.get()).toString(HAL_JSON)).build();
+            return ok(feedRepresentationFactory.format(
+                    resolveFeedURI(uriInfo), feedEntry.get())
+                    .toString(HAL_JSON))
+                    .build();
         }
         else
         {
@@ -99,7 +102,9 @@ public class FeedResource
         {
             final Representation hal = feedRepresentationFactory.format(resolveFeedURI(uriInfo), feed.publish(payload));
 
-            return created(new URI(hal.getResourceLink().getHref())).entity(hal.toString(HAL_JSON)).build();
+            return created(new URI(hal.getResourceLink().getHref()))
+                    .entity(hal.toString(HAL_JSON))
+                    .build();
         }
         catch (IllegalArgumentException e)
         {
@@ -124,7 +129,7 @@ public class FeedResource
             : uriInfo.getBaseUriBuilder().path(FeedResource.CONTEXT).build();
     }
 
-    private URI toFeedURI(String publicBaseUrl) {
+    private URI toFeedUri(String publicBaseUrl) {
         try {
             if (publicBaseUrl == null) {
                 LOGGER.info("publicBaseUrl is not set, 'self' will be determined through the HTTP-request");

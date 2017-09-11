@@ -3,6 +3,7 @@ package com.qmetric.feed.app.resource
 import com.google.common.base.Function
 import com.google.common.base.Optional
 import com.qmetric.feed.domain.*
+import com.sun.jersey.api.uri.UriBuilderImpl
 import com.theoryinpractise.halbuilder.api.Link
 import com.theoryinpractise.halbuilder.api.Representation
 import spock.lang.Shared
@@ -10,6 +11,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import javax.annotation.Nullable
+import javax.ws.rs.core.UriInfo
 
 import static com.qmetric.feed.domain.FeedRestrictionCriteria.Filter
 import static com.theoryinpractise.halbuilder.api.RepresentationFactory.HAL_JSON
@@ -25,13 +27,13 @@ class FeedResourceTest extends Specification {
 
     @Shared def feedEntry = new FeedEntry(Id.of("1"), now(), new Payload(["stuff": "1234"]))
 
-    final feed = Mock(Feed)
+    final Feed feed = Mock(Feed)
 
-    final feedRepresentationFactory = Mock(FeedRepresentationFactory)
+    final FeedRepresentationFactory<Representation> feedRepresentationFactory = Mock(FeedRepresentationFactory)
 
-    final representation = Mock(Representation)
+    final Representation representation = Mock(Representation)
 
-    final link = Mock(Link)
+    final Link link = Mock(Link)
 
     final feedResource = new FeedResource('http://localhost:8080', feed, feedRepresentationFactory, 10)
 
@@ -122,6 +124,68 @@ class FeedResourceTest extends Specification {
         new FeedRestrictionCriteria(new Filter(Optional.of(Id.of("5")), Optional.absent()), 10) | entries    | false | responseBody       | 200
         new FeedRestrictionCriteria(new Filter(Optional.absent(), Optional.of(Id.of("5"))), 10) | entries    | false | responseBody       | 200
         new FeedRestrictionCriteria(new Filter(Optional.absent(), Optional.absent()), 10)       | _          | true  | "Illegal argument" | 400
+    }
+
+    def "getEntry should use URI from request when resource is not configured with a 'publicBaseUrl'"()
+    {
+        given:
+        def uri = new URI('http://www.example.org/')
+        def uriInfo = Mock(UriInfo)
+        uriInfo.getBaseUriBuilder() >> new UriBuilderImpl().uri(uri)
+
+        and:
+        feed.retrieveBy(feedEntry.id) >> Optional.of(feedEntry)
+
+        and:
+        def feedResourceNoPublicBaseUrl = new FeedResource(null, feed, feedRepresentationFactory, 10)
+
+        when:
+        feedResourceNoPublicBaseUrl.getEntry(uriInfo, null, feedEntry.id.toString())
+
+        then:
+        1 * feedRepresentationFactory.format(new URI('http://www.example.org/feed'), feedEntry) >> representation
+    }
+
+    def "getPage should use URI from request when resource is not configured with a 'publicBaseUrl'"()
+    {
+        given:
+        def uri = new URI('http://www.example.org/')
+        def uriInfo = Mock(UriInfo)
+        uriInfo.getBaseUriBuilder() >> new UriBuilderImpl().uri(uri)
+
+        and:
+        feed.retrieveBy(_ as FeedRestrictionCriteria) >> entries
+
+        and:
+        def feedResourceNoPublicBaseUrl = new FeedResource(null, feed, feedRepresentationFactory, 10)
+
+        when:
+        feedResourceNoPublicBaseUrl.getPage(uriInfo, null, Optional.absent(), Optional.of('1'), Optional.of(10))
+
+        then:
+        1 * feedRepresentationFactory.format(new URI('http://www.example.org/feed'), entries) >> representation
+    }
+
+    def "postEntry should use URI from request when resource is not configured with a 'publicBaseUrl'"()
+    {
+        given:
+        def uri = new URI('http://www.example.org/')
+        def uriInfo = Mock(UriInfo)
+        uriInfo.getBaseUriBuilder() >> new UriBuilderImpl().uri(uri)
+
+        and:
+        feed.publish(_ as Payload) >> feedEntry
+        link.getHref() >> selfLinkHref
+        representation.getResourceLink() >> link
+
+        and:
+        def feedResourceNoPublicBaseUrl = new FeedResource(null, feed, feedRepresentationFactory, 10)
+
+        when:
+        feedResourceNoPublicBaseUrl.postEntry(uriInfo, null, feedEntry.payload)
+
+        then:
+        1 * feedRepresentationFactory.format(new URI('http://www.example.org/feed'), feedEntry) >> representation
     }
 
     private static Optional<String> optionalIdToOptionalStr(final Optional<Id> optionalId)
