@@ -60,17 +60,17 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         this.hiddenPayloadAttributes = hiddenPayloadAttributes;
     }
 
-    @Override public Representation format(final URI feedURI, final FeedEntries entries)
+    @Override public Representation format(final URI feedUri, final FeedEntries entries)
     {
-        final Representation hal = representationFactory.newRepresentation(feedURI);
+        final Representation hal = representationFactory.newRepresentation(feedUri);
 
         hal.withProperty(FEED_NAME_KEY, feedName);
 
-        includeNavigationalLinks(feedURI, entries, hal);
+        includeNavigationalLinks(feedUri, entries, hal);
 
         for (final FeedEntry entry : entries.all())
         {
-            final Representation entryHal = formatExcludingPayloadAttributes(feedURI, entry);
+            final Representation entryHal = formatExcludingPayloadAttributes(feedUri, entry);
 
             includePayloadAttributes(entryHal, filterKeys(entry.payload.attributes, new Predicate<String>()
             {
@@ -86,9 +86,9 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         return hal;
     }
 
-    @Override public Representation format(final URI feedURI, final FeedEntry entry)
+    @Override public Representation format(final URI feedUri, final FeedEntry entry)
     {
-        final Representation hal = formatExcludingPayloadAttributes(feedURI, entry);
+        final Representation hal = formatExcludingPayloadAttributes(feedUri, entry);
 
         includePayloadAttributes(hal, entry.payload.attributes);
 
@@ -103,22 +103,22 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         }
     }
 
-    private void includeNavigationalLinks(URI feedURI, final FeedEntries entries, final Representation hal)
+    private void includeNavigationalLinks(URI feedUri, final FeedEntries entries, final Representation hal)
     {
         if (entries.laterExists)
         {
-            hal.withLink(PREVIOUS_LINK_RELATION, String.format("%s?laterThan=%s", feedURI, entries.first().get().id));
+            hal.withLink(PREVIOUS_LINK_RELATION, String.format("%s?laterThan=%s", feedUri, entries.first().get().id));
         }
 
         if (entries.earlierExists)
         {
-            hal.withLink(NEXT_LINK_RELATION, String.format("%s?earlierThan=%s", feedURI, entries.last().get().id));
+            hal.withLink(NEXT_LINK_RELATION, String.format("%s?earlierThan=%s", feedUri, entries.last().get().id));
         }
     }
 
-    private Representation formatExcludingPayloadAttributes(URI feedURI, final FeedEntry entry)
+    private Representation formatExcludingPayloadAttributes(URI feedUri, final FeedEntry entry)
     {
-        final Representation hal = representationFactory.newRepresentation(selfLinkForEntry(feedURI, entry));
+        final Representation hal = representationFactory.newRepresentation(selfLinkForEntry(feedUri, entry));
 
         includeAdditionalLinks(entry, hal, links.additionalLinksForFeedEntry());
 
@@ -129,9 +129,9 @@ public class HalFeedRepresentationFactory implements FeedRepresentationFactory<R
         return hal;
     }
 
-    private String selfLinkForEntry(URI feedURI, final FeedEntry feedEntry)
+    private String selfLinkForEntry(URI feedUri, final FeedEntry feedEntry)
     {
-        return String.format("%s/%s", feedURI, feedEntry.id);
+        return String.format("%s/%s", feedUri, feedEntry.id);
     }
 
     private void includeAdditionalLinks(final FeedEntry feedEntry, final Representation representation, final Collection<FeedEntryLink> links)
