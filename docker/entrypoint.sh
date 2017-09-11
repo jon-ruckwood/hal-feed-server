@@ -18,7 +18,7 @@ if [ ! -d "$DATA_DIR/mysql" ]; then
     mkdir -p "$DATA_DIR"
     chown -R mysql:mysql "$DATA_DIR"
 
-    mysql_install_db --user=mysql --datadir="$DATA_DIR" --rpm
+    mysql_install_db --user=mysql --datadir="$DATA_DIR"
 fi
 
 mysqld_safe --nowatch
